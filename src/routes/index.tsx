@@ -7,10 +7,6 @@ import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city
 import type { DocumentHead } from '@builder.io/qwik-city';
 import { tursoClient } from '~/utils/turso';
 
-import Counter from '~/components/starter/counter/counter';
-import Infobox from '~/components/starter/infobox/infobox';
-import Starter from '~/components/starter/next-steps/next-steps';
-import { TailwindExample } from '~/components/starter/tailwind/tailwind-example';
 
 export const useClassesLoader = routeLoader$(async (event) => {
   const client = tursoClient(event);
@@ -177,21 +173,41 @@ export default component$(() => {
                   <tr key={cls.id}>
                     {editId.value === String(cls.id) ? (
                       <>
-                        <Form action={updateAction} spaReset style={{ display: 'flex', gap: '8px' }} onSubmit$={() => { editId.value = null; editValue.value = {}; }}>
-                          <input type="hidden" name="id" value={cls.id} />
+                        <td style={tdStyle}>
                           <input type="text" name="name" value={editValue.value.name ?? cls.name} onInput$={e => editValue.value = { ...editValue.value, name: (e.target as HTMLInputElement).value }} required style={inputStyle} />
+                        </td>
+                        <td style={tdStyle}>
                           <input type="text" name="instructor" value={editValue.value.instructor ?? cls.instructor} onInput$={e => editValue.value = { ...editValue.value, instructor: (e.target as HTMLInputElement).value }} required style={inputStyle} />
+                        </td>
+                        <td style={tdStyle}>
                           <input type="date" name="date" value={editValue.value.date ?? cls.date} onInput$={e => editValue.value = { ...editValue.value, date: (e.target as HTMLInputElement).value }} required style={inputStyle} />
+                        </td>
+                        <td style={tdStyle}>
                           <input type="number" name="spots" min="1" value={editValue.value.spots ?? cls.spots} onInput$={e => editValue.value = { ...editValue.value, spots: (e.target as HTMLInputElement).value }} required style={inputStyle} />
+                        </td>
+                        <td style={tdStyle}>
                           <select name="level" value={editValue.value.level ?? cls.level} onInput$={e => editValue.value = { ...editValue.value, level: (e.target as HTMLSelectElement).value }} required style={inputStyle}>
                             <option value="Beginner">Beginner</option>
                             <option value="Intermediate">Intermediate</option>
                             <option value="Advanced">Advanced</option>
                             <option value="All Levels">All Levels</option>
                           </select>
-                          <button type="submit" style={actionBtn}>Save</button>
+                        </td>
+                        <td style={tdStyle}>
+                          <button type="button" style={actionBtn} onClick$={async () => {
+                            const formData = new FormData();
+                            formData.append('id', String(cls.id));
+                            formData.append('name', editValue.value.name ?? cls.name);
+                            formData.append('instructor', editValue.value.instructor ?? cls.instructor);
+                            formData.append('date', editValue.value.date ?? cls.date);
+                            formData.append('spots', String(editValue.value.spots ?? cls.spots));
+                            formData.append('level', editValue.value.level ?? cls.level);
+                            await updateAction.submit(formData);
+                            editId.value = null;
+                            editValue.value = {};
+                          }}>Save</button>
                           <button type="button" style={{ ...actionBtn, background: sage, color: terracotta, border: `1px solid ${terracotta}` }} onClick$={() => { editId.value = null; editValue.value = {}; }}>Cancel</button>
-                        </Form>
+                        </td>
                       </>
                     ) : (
                       <>
@@ -221,94 +237,8 @@ export default component$(() => {
         </div>
       </div>
 
-      <Starter />
-      <TailwindExample />
 
-      <div role="presentation" class="ellipsis"></div>
-      <div role="presentation" class="ellipsis ellipsis-purple"></div>
-
-      <div class="container container-center container-spacing-xl">
-        <h3>
-          You can <span class="highlight">count</span>
-          <br /> on me
-        </h3>
-        <Counter />
-      </div>
-
-      <div class="container container-flex">
-        <Infobox>
-          <div q:slot="title" class="icon icon-cli">
-            CLI Commands
-          </div>
-          <>
-            <p>
-              <code>npm run dev</code>
-              <br />
-              Starts the development server and watches for changes
-            </p>
-            <p>
-              <code>npm run preview</code>
-              <br />
-              Creates production build and starts a server to preview it
-            </p>
-            <p>
-              <code>npm run build</code>
-              <br />
-              Creates production build
-            </p>
-            <p>
-              <code>npm run qwik add</code>
-              <br />
-              Runs the qwik CLI to add integrations
-            </p>
-          </>
-        </Infobox>
-
-        <div>
-          <Infobox>
-            <div q:slot="title" class="icon icon-apps">
-              Example Apps
-            </div>
-            <p>
-              Have a look at the <a href="/demo/flower">Flower App</a> or the{' '}
-              <a href="/demo/todolist">Todo App</a>.
-            </p>
-          </Infobox>
-
-          <Infobox>
-            <div q:slot="title" class="icon icon-community">
-              Community
-            </div>
-            <ul>
-              <li>
-                <span>Questions or just want to say hi? </span>
-                <a href="https://qwik.builder.io/chat" target="_blank">
-                  Chat on discord!
-                </a>
-              </li>
-              <li>
-                <span>Follow </span>
-                <a href="https://twitter.com/QwikDev" target="_blank">
-                  @QwikDev
-                </a>
-                <span> on Twitter</span>
-              </li>
-              <li>
-                <span>Open issues and contribute on </span>
-                <a href="https://github.com/BuilderIO/qwik" target="_blank">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <span>Watch </span>
-                <a href="https://qwik.builder.io/media/" target="_blank">
-                  Presentations, Podcasts, Videos, etc.
-                </a>
-              </li>
-            </ul>
-          </Infobox>
-        </div>
-      </div>
+    
     </>
   );
 });
