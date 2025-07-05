@@ -1,5 +1,7 @@
 import { component$ } from '@builder.io/qwik';
+import { routeLoader$ } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
+import { tursoClient } from '~/utils/turso';
 
 import Counter from '~/components/starter/counter/counter';
 import Hero from '~/components/starter/hero/hero';
@@ -7,8 +9,19 @@ import Infobox from '~/components/starter/infobox/infobox';
 import Starter from '~/components/starter/next-steps/next-steps';
 import { TailwindExample } from '~/components/starter/tailwind/tailwind-example';
 
+export const useFrameworksLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM frameworks');
+  // Map each row to an object with id and name, cast row to any for type safety
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    name: (row as any).name,
+  })) as Array<{ id: number; name: string }>;
+});
+
 //
 export default component$(() => {
+  const frameworks = useFrameworksLoader();
   return (
     <>
       <Hero />
@@ -24,6 +37,19 @@ export default component$(() => {
           <br /> on me
         </h3>
         <Counter />
+      </div>
+
+      <div class="container container-center container-spacing-xl">
+        <h3>Frameworks in Turso Database</h3>
+        {frameworks.value.length ? (
+          <ul>
+            {frameworks.value.map((fw) => (
+              <li key={fw.id}>{fw.name}</li>
+            ))}
+          </ul>
+        ) : (
+          <span>No frameworks found in the database.</span>
+        )}
       </div>
 
       <div class="container container-flex">
