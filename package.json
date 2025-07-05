@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@builder.io/qwik": "^1.2.15",
-    "@builder.io/qwik-city": "~1.0.0",
+    "@builder.io/qwik-city": "latest",
     "@types/eslint": "8.37.0",
     "@types/node": "^18.16.0",
     "@typescript-eslint/eslint-plugin": "5.59.1",
@@ -40,5 +40,8 @@
     "vercel": "^32.0.1",
     "vite": "^5.4.19",
     "vite-tsconfig-paths": "4.2.0"
+  },
+  "dependencies": {
+    "@libsql/client": "latest"
   }
 }
