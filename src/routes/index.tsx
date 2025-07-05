@@ -25,6 +25,19 @@ export default component$(() => {
   return (
     <>
       <Hero />
+      <div class="container container-center container-spacing-xl">
+        <h3>Frameworks in Turso Database</h3>
+        {frameworks.value.length ? (
+          <ul>
+            {frameworks.value.map((fw) => (
+              <li key={fw.id}>{fw.name}</li>
+            ))}
+          </ul>
+        ) : (
+          <span>No frameworks found in the database.</span>
+        )}
+      </div>
+
       <Starter />
       <TailwindExample />
 
@@ -39,18 +52,6 @@ export default component$(() => {
         <Counter />
       </div>
 
-      <div class="container container-center container-spacing-xl">
-        <h3>Frameworks in Turso Database</h3>
-        {frameworks.value.length ? (
-          <ul>
-            {frameworks.value.map((fw) => (
-              <li key={fw.id}>{fw.name}</li>
-            ))}
-          </ul>
-        ) : (
-          <span>No frameworks found in the database.</span>
-        )}
-      </div>
 
       <div class="container container-flex">
         <Infobox>
