@@ -19,5 +19,3 @@ export function tursoClient(requestEvent: RequestEventBase): Client {
     authToken,
   });
 }
-
-//
