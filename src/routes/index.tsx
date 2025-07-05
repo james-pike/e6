@@ -12,7 +12,7 @@ import { TailwindExample } from '~/components/starter/tailwind/tailwind-example'
 export const useFrameworksLoader = routeLoader$(async (event) => {
   const client = tursoClient(event);
   const result = await client.execute('SELECT * FROM frameworks');
-  // Map each row to an object with id and name, cast row to any for type safety
+  // Map each row to an object with id and name, cast row to any for type safesty
   return result.rows.map(row => ({
     id: (row as any).id,
     name: (row as any).name,
@@ -80,6 +80,7 @@ export default component$(() => {
             </p>
           </>
         </Infobox>
+        
 
         <div>
           <Infobox>
