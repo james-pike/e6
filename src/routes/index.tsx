@@ -207,6 +207,7 @@ export default component$(() => {
   };
   const formStyle = {
     display: 'flex',
+    flexWrap: 'wrap' as any,
     gap: '12px',
     margin: '24px 0',
     alignItems: 'center',
@@ -223,13 +224,15 @@ export default component$(() => {
     outline: 'none',
     color: terracotta,
     background: 'white',
+    minWidth: '120px',
+    flex: '1 1 200px' as any,
   };
 
   return (
     <>
 <Hero/>
     <WorkshopsCarousel workshops={workshops.value} />
-      <div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px' }}>
+      <div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px', maxWidth: '100%', overflow: 'hidden' }}>
         <h1 style={{ color: terracotta, fontFamily: 'serif', fontWeight: 700, fontSize: '2.5rem', marginBottom: '8px' }}>Pottery Studio Classes</h1>
         <p style={{ color: terracotta, fontSize: '1.2rem', marginBottom: '24px' }}>Manage your pottery classes below.</p>
         <Form action={addAction} spaReset style={formStyle}>
@@ -244,9 +247,9 @@ export default component$(() => {
             <option value="Advanced">Advanced</option>
             <option value="All Levels">All Levels</option>
           </select>
-          <button type="submit" style={actionBtn}>Add</button>
+          <button type="submit" style={{ ...actionBtn, flex: '0 0 auto' as any }}>Add</button>
         </Form>
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
           <table style={tableStyle}>
             <thead>
               <tr>

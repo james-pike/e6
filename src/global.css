@@ -16,6 +16,30 @@
     --qwik-dark-background: #151934;
     --qwik-dark-text: #ffffff;
   }
+
+  /* Prevent horizontal overflow */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Ensure containers don't overflow */
+  .container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Responsive table behavior */
+  table {
+    min-width: 100%;
+  }
+
+  /* Responsive form elements */
+  input, select, textarea {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 /**
