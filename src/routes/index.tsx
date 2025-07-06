@@ -5,6 +5,11 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
+import EventAdmin from '~/components/eventAdmin';
+import EventCarousel from '~/components/eventCarousel';
+import FAQAccordion from '~/components/FAQAccordion';
+import Hero from '~/components/Hero';
+import ReviewCarousel from '~/components/ReviewCarousel';
 import WorkshopsCarousel from '~/components/WorkshopsCarousel';
 import { tursoClient } from '~/utils/turso';
 
@@ -96,6 +101,60 @@ export const useDeleteClass = routeAction$(
   zod$({ id: z.string().min(1) })
 );
 
+export const useAddWorkshop = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'INSERT INTO classes (name, instructor, date, spots, level, description, duration, price, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [data.title, data.instructor, data.date, Number(data.spots), data.level, data.description || null, data.duration || null, data.price || null, data.image || null]
+    );
+    return { success: true };
+  },
+  zod$({
+    title: z.string().min(1),
+    instructor: z.string().min(1),
+    date: z.string().min(1),
+    spots: z.string().min(1),
+    level: z.string().min(1),
+    description: z.string().optional(),
+    duration: z.string().optional(),
+    price: z.string().optional(),
+    image: z.string().optional(),
+  })
+);
+
+export const useUpdateWorkshop = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ?, description = ?, duration = ?, price = ?, image = ? WHERE id = ?',
+      [data.title, data.instructor, data.date, Number(data.spots), data.level, data.description || null, data.duration || null, data.price || null, data.image || null, data.id]
+    );
+    return { success: true };
+  },
+  zod$({
+    id: z.string().min(1),
+    title: z.string().min(1),
+    instructor: z.string().min(1),
+    date: z.string().min(1),
+    spots: z.string().min(1),
+    level: z.string().min(1),
+    description: z.string().optional(),
+    duration: z.string().optional(),
+    price: z.string().optional(),
+    image: z.string().optional(),
+  })
+);
+
+export const useDeleteWorkshop = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute('DELETE FROM classes WHERE id = ?', [data.id]);
+    return { success: true };
+  },
+  zod$({ id: z.string().min(1) })
+);
+
 export default component$(() => {
   const classes = useClassesLoader();
   const workshops = useWorkshopsLoader();
@@ -168,7 +227,7 @@ export default component$(() => {
 
   return (
     <>
-
+<Hero/>
     <WorkshopsCarousel workshops={workshops.value} />
       <div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px' }}>
         <h1 style={{ color: terracotta, fontFamily: 'serif', fontWeight: 700, fontSize: '2.5rem', marginBottom: '8px' }}>Pottery Studio Classes</h1>
@@ -268,7 +327,10 @@ export default component$(() => {
           </table>
         </div>
       </div>
-
+      <ReviewCarousel />
+<EventCarousel/>
+<FAQAccordion/>
+<EventAdmin/>
 
     
     </>
