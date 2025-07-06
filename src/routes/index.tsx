@@ -6,7 +6,6 @@ import { component$, useSignal } from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import EventAdmin from '~/components/eventAdmin';
-import EventCarousel from '~/components/eventCarousel';
 import FAQAccordion from '~/components/FAQAccordion';
 import Hero from '~/components/Hero';
 import ReviewCarousel from '~/components/ReviewCarousel';
@@ -234,108 +233,9 @@ export default component$(() => {
     <WorkshopsCarousel workshops={workshops.value} />
     
       <ReviewCarousel />
-<EventCarousel/>
 <FAQAccordion/>
 <EventAdmin/>
-
-<div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px', maxWidth: '100%', overflow: 'hidden' }}>
-        <h1 style={{ color: terracotta, fontFamily: 'serif', fontWeight: 700, fontSize: '2.5rem', marginBottom: '8px' }}>Pottery Studio Classes</h1>
-        <p style={{ color: terracotta, fontSize: '1.2rem', marginBottom: '24px' }}>Manage your pottery classes below.</p>
-        <Form action={addAction} spaReset style={formStyle}>
-          <input type="text" name="name" placeholder="Class name" required style={inputStyle} />
-          <input type="text" name="instructor" placeholder="Instructor" required style={inputStyle} />
-          <input type="date" name="date" required style={inputStyle} />
-          <input type="number" name="spots" min="1" placeholder="Spots" required style={inputStyle} />
-          <select name="level" required style={inputStyle}>
-            <option value="">Level</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-            <option value="All Levels">All Levels</option>
-          </select>
-          <button type="submit" style={{ ...actionBtn, flex: '0 0 auto' as any }}>Add</button>
-        </Form>
-        <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Instructor</th>
-                <th style={thStyle}>Date</th>
-                <th style={thStyle}>Spots</th>
-                <th style={thStyle}>Level</th>
-                <th style={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {classes.value.length ? (
-                classes.value.map((cls) => (
-                  <tr key={cls.id}>
-                    {editId.value === String(cls.id) ? (
-                      <>
-                        <td style={tdStyle}>
-                          <input type="text" name="name" value={editValue.value.name ?? cls.name} onInput$={e => editValue.value = { ...editValue.value, name: (e.target as HTMLInputElement).value }} required style={inputStyle} />
-                        </td>
-                        <td style={tdStyle}>
-                          <input type="text" name="instructor" value={editValue.value.instructor ?? cls.instructor} onInput$={e => editValue.value = { ...editValue.value, instructor: (e.target as HTMLInputElement).value }} required style={inputStyle} />
-                        </td>
-                        <td style={tdStyle}>
-                          <input type="date" name="date" value={editValue.value.date ?? cls.date} onInput$={e => editValue.value = { ...editValue.value, date: (e.target as HTMLInputElement).value }} required style={inputStyle} />
-                        </td>
-                        <td style={tdStyle}>
-                          <input type="number" name="spots" min="1" value={editValue.value.spots ?? cls.spots} onInput$={e => editValue.value = { ...editValue.value, spots: (e.target as HTMLInputElement).value }} required style={inputStyle} />
-                        </td>
-                        <td style={tdStyle}>
-                          <select name="level" value={editValue.value.level ?? cls.level} onInput$={e => editValue.value = { ...editValue.value, level: (e.target as HTMLSelectElement).value }} required style={inputStyle}>
-                            <option value="Beginner">Beginner</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advanced">Advanced</option>
-                            <option value="All Levels">All Levels</option>
-                          </select>
-                        </td>
-                        <td style={tdStyle}>
-                          <button type="button" style={actionBtn} onClick$={async () => {
-                            const formData = new FormData();
-                            formData.append('id', String(cls.id));
-                            formData.append('name', editValue.value.name ?? cls.name);
-                            formData.append('instructor', editValue.value.instructor ?? cls.instructor);
-                            formData.append('date', editValue.value.date ?? cls.date);
-                            formData.append('spots', String(editValue.value.spots ?? cls.spots));
-                            formData.append('level', editValue.value.level ?? cls.level);
-                            await updateAction.submit(formData);
-                            editId.value = null;
-                            editValue.value = {};
-                          }}>Save</button>
-                          <button type="button" style={{ ...actionBtn, background: sage, color: terracotta, border: `1px solid ${terracotta}` }} onClick$={() => { editId.value = null; editValue.value = {}; }}>Cancel</button>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td style={tdStyle}>{cls.name}</td>
-                        <td style={tdStyle}>{cls.instructor}</td>
-                        <td style={tdStyle}>{cls.date}</td>
-                        <td style={tdStyle}>{cls.spots}</td>
-                        <td style={tdStyle}>{cls.level}</td>
-                        <td style={tdStyle}>
-                          <button style={actionBtn} onClick$={() => { editId.value = String(cls.id); editValue.value = { ...cls }; }}>Edit</button>
-                          <Form action={deleteAction} spaReset style={{ display: 'inline' }}>
-                            <input type="hidden" name="id" value={cls.id} />
-                            <button type="submit" style={{ ...actionBtn, background: '#fff', color: terracotta, border: `1px solid ${terracotta}` }}>Delete</button>
-                          </Form>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} style={{ ...tdStyle, textAlign: 'center', color: terracotta }}>No classes found in the studio.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+   
 
     
     </>

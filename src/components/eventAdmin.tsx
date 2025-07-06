@@ -19,6 +19,10 @@ export default component$(() => {
   const editingId = useSignal<string | null>(null);
   const form = useSignal<Partial<Workshop>>({});
 
+  // Theme colors
+  const terracotta = '#E2725B';
+  const sage = '#B2AC88';
+
   // Handle form input changes
   const handleInput = $((e: any) => {
     form.value = { ...form.value, [e.target.name]: e.target.value };
@@ -30,6 +34,43 @@ export default component$(() => {
     form.value = { ...workshop };
   });
 
+  const formStyle = {
+    display: 'flex',
+    flexWrap: 'wrap' as any,
+    gap: '12px',
+    margin: '24px 0',
+    alignItems: 'center',
+    background: sage,
+    padding: '16px',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(178, 172, 136, 0.10)',
+  };
+
+  const inputStyle = {
+    border: `1px solid ${terracotta}`,
+    borderRadius: '8px',
+    padding: '8px 16px',
+    fontSize: '1rem',
+    outline: 'none',
+    color: terracotta,
+    background: 'white',
+    minWidth: '120px',
+    flex: '1 1 200px' as any,
+  };
+
+  const actionBtn = {
+    background: terracotta,
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '6px 16px',
+    margin: '0 4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    boxShadow: '0 2px 6px rgba(226, 114, 91, 0.10)',
+    transition: 'background 0.2s',
+  };
+
   return (
     <div class="container mx-auto px-4 py-8">
       <div class="mb-8">
@@ -38,6 +79,32 @@ export default component$(() => {
           If you don't see your latest changes, try a hard refresh (Ctrl+Shift+R) or clear your browser cache. Ensure your production environment variables point to the correct Turso database.
         </div>
       </div>
+
+      <div class="flex-1 bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">{editingId.value ? 'Edit Workshop' : 'Add Workshop'}</h3>
+          </div>
+          <Form action={editingId.value ? updateAction : addAction} spaReset style={formStyle} onSubmit$={() => { editingId.value = null; form.value = {}; }}>
+            {editingId.value && <input type="hidden" name="id" value={editingId.value} />}
+            <input name="name" value={form.value.name || ''} onInput$={handleInput} placeholder="Class name" required style={inputStyle} />
+            <input name="instructor" value={form.value.instructor || ''} onInput$={handleInput} placeholder="Instructor" required style={inputStyle} />
+            <input name="date" type="date" value={form.value.date || ''} onInput$={handleInput} required style={inputStyle} />
+            <input name="spots" type="number" min="1" value={form.value.spots || ''} onInput$={handleInput} placeholder="Spots" required style={inputStyle} />
+            <select name="level" value={form.value.level || ''} onInput$={handleInput} required style={inputStyle}>
+              <option value="">Level</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="All Levels">All Levels</option>
+            </select>
+            <div class="flex gap-2" style={{ flex: '0 0 auto' as any }}>
+              <button type="submit" style={actionBtn}>{editingId.value ? 'Update' : 'Add'}</button>
+              {editingId.value && (
+                <button type="button" style={{ ...actionBtn, background: sage, color: terracotta, border: `1px solid ${terracotta}` }} onClick$={() => { editingId.value = null; form.value = {}; }}>Cancel</button>
+              )}
+            </div>
+          </Form>
+        </div>
       {/* Vertically stacked layout for all screen sizes */}
       <div class="flex flex-col gap-8">
         {/* Table area */}
@@ -103,31 +170,7 @@ export default component$(() => {
           )}
         </div>
         {/* Form area */}
-        <div class="flex-1 bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900">{editingId.value ? 'Edit Workshop' : 'Add Workshop'}</h3>
-          </div>
-          <Form action={editingId.value ? updateAction : addAction} spaReset class="p-6 grid grid-cols-1 gap-4" onSubmit$={() => { editingId.value = null; form.value = {}; }}>
-            {editingId.value && <input type="hidden" name="id" value={editingId.value} />}
-            <input name="name" value={form.value.name || ''} onInput$={handleInput} placeholder="Class name" class="border p-2 rounded" required />
-            <input name="instructor" value={form.value.instructor || ''} onInput$={handleInput} placeholder="Instructor" class="border p-2 rounded" required />
-            <input name="date" type="date" value={form.value.date || ''} onInput$={handleInput} class="border p-2 rounded" required />
-            <input name="spots" type="number" min="1" value={form.value.spots || ''} onInput$={handleInput} placeholder="Spots" class="border p-2 rounded" required />
-            <select name="level" value={form.value.level || ''} onInput$={handleInput} class="border p-2 rounded" required>
-              <option value="">Level</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-              <option value="All Levels">All Levels</option>
-            </select>
-            <div class="flex gap-2">
-              <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">{editingId.value ? 'Update' : 'Add'}</button>
-              {editingId.value && (
-                <button type="button" class="bg-gray-400 text-white px-4 py-2 rounded" onClick$={() => { editingId.value = null; form.value = {}; }}>Cancel</button>
-              )}
-            </div>
-          </Form>
-        </div>
+
       </div>
     </div>
   );
