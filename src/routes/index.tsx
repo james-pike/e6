@@ -3,7 +3,7 @@
  * Now using 'classes' table: id, name, instructor, date, spots, level
  */
 import { component$} from '@builder.io/qwik';
-import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
+import { routeLoader$, routeAction$, zod$, z } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import FAQAccordion from '~/components/FAQAccordion';
 import Hero from '~/components/Hero';

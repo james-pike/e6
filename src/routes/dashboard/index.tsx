@@ -1,5 +1,5 @@
 import { component$, useSignal } from "@builder.io/qwik";
-import { type RequestHandler, routeLoader$, routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
+import { type RequestHandler, routeLoader$, routeAction$, zod$, z } from "@builder.io/qwik-city";
 import { useSession, useSignOut } from "~/routes/plugin@auth";
 import EventAdmin from '~/components/eventAdmin';
 import { tursoClient } from '~/utils/turso';
