@@ -8,13 +8,13 @@ interface FAQItem {
 }
 
 export default component$(() => {
-  const openItems = useSignal<Set<number>>(new Set());
+  const openItems = useSignal<number[]>([]);
 
   const faqItems: FAQItem[] = [
     {
       id: 1,
       question: "How do I care for my pottery?",
-      answer: "Our pottery is dishwasher safe, but we recommend hand washing to preserve the finish. Avoid extreme temperature changes and use mild soap. For decorative pieces, simply dust regularly with a soft cloth.",
+      answer: "Hand wash with warm water and mild soap. Avoid harsh chemicals and abrasive scrubbers. Most pieces are dishwasher safe, but hand washing preserves the finish longer. Store in a dry place away from direct sunlight.",
       category: "Care"
     },
     {
@@ -74,13 +74,12 @@ export default component$(() => {
   ];
 
   const toggleItem = $((id: number) => {
-    const newOpenItems = new Set(openItems.value);
-    if (newOpenItems.has(id)) {
-      newOpenItems.delete(id);
+    const currentOpenItems = openItems.value;
+    if (currentOpenItems.includes(id)) {
+      openItems.value = currentOpenItems.filter(itemId => itemId !== id);
     } else {
-      newOpenItems.add(id);
+      openItems.value = [...currentOpenItems, id];
     }
-    openItems.value = newOpenItems;
   });
 
   const getCategoryColor = (category: string) => {
@@ -130,7 +129,7 @@ export default component$(() => {
                 <button
                   onClick$={() => toggleItem(item.id)}
                   class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-clay-50/50 hover:to-sage-50/50 dark:hover:bg-clay-800/50 transition-all duration-200"
-                  aria-expanded={openItems.value.has(item.id)}
+                  aria-expanded={openItems.value.includes(item.id)}
                   aria-controls={`faq-answer-${item.id}`}
                 >
                   <div class="flex items-center space-x-4">
@@ -148,13 +147,13 @@ export default component$(() => {
                   {/* Expand/Collapse Icon */}
                   <div class="flex-shrink-0">
                     <div class={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      openItems.value.has(item.id) 
+                      openItems.value.includes(item.id) 
                         ? 'bg-gradient-to-r from-clay-500 to-earth-500 text-white shadow-lg' 
                         : 'bg-gradient-to-r from-clay-100 to-sage-100 text-clay-600'
                     }`}>
                       <svg 
                         class={`w-5 h-5 transition-transform duration-300 ${
-                          openItems.value.has(item.id) ? 'rotate-180' : ''
+                          openItems.value.includes(item.id) ? 'rotate-180' : ''
                         }`}
                         fill="none" 
                         stroke="currentColor" 
@@ -170,9 +169,9 @@ export default component$(() => {
                 <div 
                   id={`faq-answer-${item.id}`}
                   class={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openItems.value.has(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    openItems.value.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                   }`}
-                  aria-hidden={!openItems.value.has(item.id)}
+                  aria-hidden={!openItems.value.includes(item.id)}
                 >
                   <div class="px-6 pb-5">
                     <div class="border-t-2 border-gradient-to-r from-clay-100 to-sage-100 pt-4">
