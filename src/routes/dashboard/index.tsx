@@ -1,6 +1,68 @@
 import { component$, useSignal } from "@builder.io/qwik";
-import { type RequestHandler } from "@builder.io/qwik-city";
+import { type RequestHandler, routeLoader$, routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
 import { useSession, useSignOut } from "~/routes/plugin@auth";
+import EventAdmin from '~/components/eventAdmin';
+import { tursoClient } from '~/utils/turso';
+
+// CRUD Loaders/Actions for dashboard
+export const useClassesLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    name: (row as any).name,
+    instructor: (row as any).instructor,
+    date: (row as any).date,
+    spots: (row as any).spots,
+    level: (row as any).level,
+  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
+});
+
+export const useAddClass = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'INSERT INTO classes (name, instructor, date, spots, level) VALUES (?, ?, ?, ?, ?)',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level]
+    );
+    return { success: true };
+  },
+  zod$({
+    name: z.string().min(1),
+    instructor: z.string().min(1),
+    date: z.string().min(1),
+    spots: z.string().min(1),
+    level: z.string().min(1),
+  })
+);
+
+export const useUpdateClass = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ? WHERE id = ?',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.id]
+    );
+    return { success: true };
+  },
+  zod$({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    instructor: z.string().min(1),
+    date: z.string().min(1),
+    spots: z.string().min(1),
+    level: z.string().min(1),
+  })
+);
+
+export const useDeleteClass = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute('DELETE FROM classes WHERE id = ?', [data.id]);
+    return { success: true };
+  },
+  zod$({ id: z.string().min(1) })
+);
 
 // Route protection - redirect to signin if not authenticated
 export const onRequest: RequestHandler = (event) => {
@@ -103,6 +165,11 @@ export default component$(() => {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Event Admin Section - Only visible to authenticated users */}
+          <div class="mb-12">
+            <EventAdmin />
           </div>
 
           {/* Dashboard Content */}

@@ -1,6 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
-import { useAddClass, useUpdateClass, useDeleteClass, useClassesLoader } from '~/routes/index';
+import { useAddClass, useUpdateClass, useDeleteClass, useClassesLoader } from '~/routes/dashboard';
 
 interface Workshop {
   id: number;

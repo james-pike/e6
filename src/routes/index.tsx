@@ -5,7 +5,6 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import EventAdmin from '~/components/eventAdmin';
 import FAQAccordion from '~/components/FAQAccordion';
 import Hero from '~/components/Hero';
 import ReviewCarousel from '~/components/ReviewCarousel';
@@ -234,7 +233,6 @@ export default component$(() => {
     
       <ReviewCarousel />
 <FAQAccordion/>
-<EventAdmin/>
    
 
     
