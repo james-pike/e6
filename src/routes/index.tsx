@@ -232,7 +232,13 @@ export default component$(() => {
     <>
 <Hero/>
     <WorkshopsCarousel workshops={workshops.value} />
-      <div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px', maxWidth: '100%', overflow: 'hidden' }}>
+    
+      <ReviewCarousel />
+<EventCarousel/>
+<FAQAccordion/>
+<EventAdmin/>
+
+<div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px', maxWidth: '100%', overflow: 'hidden' }}>
         <h1 style={{ color: terracotta, fontFamily: 'serif', fontWeight: 700, fontSize: '2.5rem', marginBottom: '8px' }}>Pottery Studio Classes</h1>
         <p style={{ color: terracotta, fontSize: '1.2rem', marginBottom: '24px' }}>Manage your pottery classes below.</p>
         <Form action={addAction} spaReset style={formStyle}>
@@ -330,10 +336,6 @@ export default component$(() => {
           </table>
         </div>
       </div>
-      <ReviewCarousel />
-<EventCarousel/>
-<FAQAccordion/>
-<EventAdmin/>
 
     
     </>
