@@ -5,6 +5,7 @@
 import { component$, useSignal } from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
+import WorkshopsCarousel from '~/components/WorkshopsCarousel';
 import { tursoClient } from '~/utils/turso';
 
 
@@ -19,6 +20,34 @@ export const useClassesLoader = routeLoader$(async (event) => {
     spots: (row as any).spots,
     level: (row as any).level,
   })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
+});
+
+export const useWorkshopsLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    title: (row as any).name,
+    description: (row as any).description || `Join our ${(row as any).level.toLowerCase()} pottery class with ${(row as any).instructor}. Learn the fundamentals of pottery in a hands-on workshop.`,
+    date: (row as any).date,
+    duration: (row as any).duration || '3 hours',
+    price: (row as any).price || '$85',
+    image: (row as any).image || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    instructor: (row as any).instructor,
+    spots: (row as any).spots,
+    level: (row as any).level as 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels',
+  })) as Array<{ 
+    id: number; 
+    title: string; 
+    description: string; 
+    date: string; 
+    duration: string; 
+    price: string; 
+    image: string; 
+    instructor: string; 
+    spots: number; 
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels'; 
+  }>;
 });
 
 export const useAddClass = routeAction$(
@@ -69,6 +98,7 @@ export const useDeleteClass = routeAction$(
 
 export default component$(() => {
   const classes = useClassesLoader();
+  const workshops = useWorkshopsLoader();
   const addAction = useAddClass();
   const updateAction = useUpdateClass();
   const deleteAction = useDeleteClass();
@@ -138,6 +168,8 @@ export default component$(() => {
 
   return (
     <>
+
+    <WorkshopsCarousel workshops={workshops.value} />
       <div class={["container", "hero"]} style={{ background: sage, borderRadius: '24px', boxShadow: '0 8px 32px rgba(178, 172, 136, 0.18)', padding: '32px 24px', marginTop: '32px', marginBottom: '32px' }}>
         <h1 style={{ color: terracotta, fontFamily: 'serif', fontWeight: 700, fontSize: '2.5rem', marginBottom: '8px' }}>Pottery Studio Classes</h1>
         <p style={{ color: terracotta, fontSize: '1.2rem', marginBottom: '24px' }}>Manage your pottery classes below.</p>
