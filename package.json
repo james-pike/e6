@@ -23,6 +23,7 @@
     "qwik": "qwik"
   },
   "devDependencies": {
+    "@auth/qwik": "0.5.4",
     "@builder.io/qwik": "^1.2.15",
     "@builder.io/qwik-city": "latest",
     "@tailwindcss/typography": "^0.5.16",
