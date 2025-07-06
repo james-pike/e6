@@ -2,7 +2,7 @@
  * Pottery Studio Theme: Terracotta (#E2725B) and Sage Green (#B2AC88)
  * Now using 'classes' table: id, name, instructor, date, spots, level
  */
-import { component$, useSignal } from '@builder.io/qwik';
+import { component$} from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z, Form } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import FAQAccordion from '~/components/FAQAccordion';
@@ -154,77 +154,13 @@ export const useDeleteWorkshop = routeAction$(
 );
 
 export default component$(() => {
-  const classes = useClassesLoader();
   const workshops = useWorkshopsLoader();
-  const addAction = useAddClass();
-  const updateAction = useUpdateClass();
-  const deleteAction = useDeleteClass();
-  const editId = useSignal<string | null>(null);
-  const editValue = useSignal<any>({});
 
   // Theme colors
-  const terracotta = '#E2725B';
-  const sage = '#B2AC88';
-  const tableStyle = {
-    width: '100%',
-    background: sage,
-    borderRadius: '16px',
-    boxShadow: '0 4px 16px rgba(178, 172, 136, 0.15)',
-    borderCollapse: 'separate' as any,
-    borderSpacing: '0',
-    marginTop: '24px',
-    overflow: 'hidden',
-  };
-  const thStyle = {
-    background: terracotta,
-    color: 'white',
-    padding: '12px 20px',
-    fontWeight: 600,
-    borderBottom: `2px solid ${sage}`,
-    textAlign: 'left' as const,
-  };
-  const tdStyle = {
-    background: 'white',
-    color: terracotta,
-    padding: '12px 20px',
-    borderBottom: `1px solid ${sage}`,
-    fontSize: '1rem',
-    textAlign: 'left' as const,
-  };
-  const actionBtn = {
-    background: terracotta,
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '6px 16px',
-    margin: '0 4px',
-    cursor: 'pointer',
-    fontWeight: 500,
-    boxShadow: '0 2px 6px rgba(226, 114, 91, 0.10)',
-    transition: 'background 0.2s',
-  };
-  const formStyle = {
-    display: 'flex',
-    flexWrap: 'wrap' as any,
-    gap: '12px',
-    margin: '24px 0',
-    alignItems: 'center',
-    background: sage,
-    padding: '16px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(178, 172, 136, 0.10)',
-  };
-  const inputStyle = {
-    border: `1px solid ${terracotta}`,
-    borderRadius: '8px',
-    padding: '8px 16px',
-    fontSize: '1rem',
-    outline: 'none',
-    color: terracotta,
-    background: 'white',
-    minWidth: '120px',
-    flex: '1 1 200px' as any,
-  };
+ 
+
+
+ 
 
   return (
     <>
