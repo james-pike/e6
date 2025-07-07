@@ -75,9 +75,6 @@ export default component$(() => {
     <div class="container mx-auto px-4 py-8">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-clay-900 mb-4">Workshop Management</h1>
-        <div class="mb-2 text-sm text-yellow-700 bg-yellow-100 border border-yellow-300 rounded p-2">
-          If you don't see your latest changes, try a hard refresh (Ctrl+Shift+R) or clear your browser cache. Ensure your production environment variables point to the correct Turso database.
-        </div>
       </div>
 
       <div class="flex-1 bg-white rounded-lg shadow-md overflow-hidden">

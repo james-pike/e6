@@ -90,7 +90,7 @@ export default component$(() => {
             </div>
             
             {/* User Menu */}
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4 relative">
               {session.value?.user && (
                 <div class="flex items-center space-x-3">
                   <div class="text-right">
@@ -102,22 +102,34 @@ export default component$(() => {
                     </p>
                   </div>
                   {session.value.user.image && (
-                    <img
-                      src={session.value.user.image}
-                      alt="Profile"
-                      class="w-10 h-10 rounded-full border-2 border-clay-200"
-                    />
+                    <div class="relative group">
+                      <button
+                        class="w-10 h-10 rounded-full border-2 border-clay-200 overflow-hidden focus:outline-none focus:ring-2 focus:ring-clay-400"
+                        aria-label="Profile menu"
+                        id="profile-menu-btn"
+                        type="button"
+                      >
+                        <img
+                          src={session.value.user.image}
+                          alt="Profile"
+                          class="w-10 h-10 rounded-full"
+                        />
+                      </button>
+                      {/* Dropdown menu */}
+                      <div class="hidden group-focus-within:block group-hover:block absolute right-0 mt-2 w-40 bg-white border border-clay-200 rounded-lg shadow-lg z-50">
+                        <button
+                          onClick$={() => {
+                            isLoading.value = true;
+                            signOut.submit({ redirectTo: '/' });
+                          }}
+                          disabled={isLoading.value}
+                          class="block w-full text-left px-4 py-2 text-sm text-clay-900 hover:bg-clay-50 rounded-t-lg disabled:opacity-50"
+                        >
+                          {isLoading.value ? 'Signing out...' : 'Sign Out'}
+                        </button>
+                      </div>
+                    </div>
                   )}
-                  <button
-                    onClick$={() => {
-                      isLoading.value = true;
-                      signOut.submit({ redirectTo: '/' });
-                    }}
-                    disabled={isLoading.value}
-                    class="px-4 py-2 text-sm font-medium text-sage-700 bg-white border border-sage-300 rounded-full hover:bg-sage-50 hover:border-sage-400 transition-colors duration-200 disabled:opacity-50"
-                  >
-                    {isLoading.value ? 'Signing out...' : 'Sign Out'}
-                  </button>
                 </div>
               )}
             </div>
@@ -138,34 +150,7 @@ export default component$(() => {
           </div>
 
           {/* User Info Card */}
-          <div class="bg-gradient-to-br from-sage-50 to-clay-50 rounded-2xl p-6 mb-8">
-            <h3 class="text-xl font-semibold text-clay-900 mb-4">Your Profile</h3>
-            <div class="grid md:grid-cols-2 gap-6">
-              <div class="space-y-3">
-                <div class="flex items-center">
-                  <span class="text-sm font-medium text-sage-700 w-20">Name:</span>
-                  <span class="text-clay-900">{session.value?.user?.name || 'N/A'}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="text-sm font-medium text-sage-700 w-20">Email:</span>
-                  <span class="text-clay-900">{session.value?.user?.email || 'N/A'}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="text-sm font-medium text-sage-700 w-20">Provider:</span>
-                  <span class="text-clay-900">Twitter</span>
-                </div>
-              </div>
-              {session.value?.user?.image && (
-                <div class="flex justify-center md:justify-end">
-                  <img
-                    src={session.value.user.image}
-                    alt="Profile"
-                    class="w-24 h-24 rounded-full border-4 border-clay-200 shadow-lg"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Removed profile info card as requested */}
 
           {/* Event Admin Section - Only visible to authenticated users */}
           <div class="mb-12">
