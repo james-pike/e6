@@ -1,5 +1,6 @@
 import { component$, useSignal } from "@builder.io/qwik";
 import { useSignIn } from "~/routes/plugin@auth";
+import { Form } from "@builder.io/qwik-city";
 
 export default component$(() => {
   const signIn = useSignIn();
@@ -51,6 +52,28 @@ export default component$(() => {
             </span>
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
+
+          {/* Divider */}
+          <div class="flex items-center my-6">
+            <div class="flex-grow border-t border-sage-200"></div>
+            <span class="mx-4 text-sage-400 text-sm">or</span>
+            <div class="flex-grow border-t border-sage-200"></div>
+          </div>
+
+          {/* Credentials Sign In Form */}
+          <Form
+            action={signIn}
+            spaReset
+            class="space-y-4"
+            onSubmit$={() => (isLoading.value = true)}
+          >
+            <input type="hidden" name="providerId" value="credentials" />
+            <input name="username" placeholder="Admin Username" required class="w-full border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300" />
+            <input name="password" type="password" placeholder="Admin Password" required class="w-full border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300" />
+            <button type="submit" disabled={isLoading.value} class="w-full px-6 py-3 bg-gradient-to-r from-sage-600 via-sage-700 to-sage-800 text-white rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed">
+              {isLoading.value ? 'Signing in...' : 'Sign in as Admin'}
+            </button>
+          </Form>
 
           {/* Info Section */}
           <div class="mt-6 p-4 bg-sage-50 rounded-xl">

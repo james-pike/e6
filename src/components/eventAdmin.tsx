@@ -19,10 +19,6 @@ export default component$(() => {
   const editingId = useSignal<string | null>(null);
   const form = useSignal<Partial<Workshop>>({});
 
-  // Theme colors
-  const terracotta = '#E2725B';
-  const sage = '#B2AC88';
-
   // Handle form input changes
   const handleInput = $((e: any) => {
     form.value = { ...form.value, [e.target.name]: e.target.value };
