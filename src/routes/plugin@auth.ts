@@ -10,7 +10,7 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
         async authorize(credentials) {
           // Set your admin username and password here
           const adminUsername = "admin";
-          const adminPassword = "supersecretpassword";
+          const adminPassword = "Earthen";
           if (
             credentials.username === adminUsername &&
             credentials.password === adminPassword
