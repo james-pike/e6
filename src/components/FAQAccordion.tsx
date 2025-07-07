@@ -93,6 +93,10 @@ export default component$(() => {
     }
   };
 
+  // Split FAQ items into two columns for independent expansion
+  const leftColumn = faqItems.filter((_, i) => i % 2 === 0);
+  const rightColumn = faqItems.filter((_, i) => i % 2 === 1);
+
   return (
     <section class="relative overflow-hidden py-16 md:py-20">
       {/* Background with pottery texture */}
@@ -120,70 +124,136 @@ export default component$(() => {
           </p>
         </div>
 
-        {/* FAQ Accordion */}
-        <div class="space-y-4">
-          {faqItems.map((item) => (
-            <div key={item.id} class="group">
-              <div class="bg-gradient-to-br from-white/90 via-sage-50/30 to-clay-50/30 backdrop-blur-sm border-2 border-clay-100 dark:border-clay-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden hover:border-clay-200">
-                {/* Question Header */}
-                <button
-                  onClick$={() => toggleItem(item.id)}
-                  class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-clay-50/50 hover:to-sage-50/50 dark:hover:bg-clay-800/50 transition-all duration-200"
-                  aria-expanded={openItems.value.includes(item.id)}
-                  aria-controls={`faq-answer-${item.id}`}
-                >
-                  <div class="flex items-center space-x-4">
-                    {/* Category Badge */}
-                    <span class={`px-3 py-1 rounded-full text-xs font-semibold border-2 shadow-lg ${getCategoryColor(item.category)}`}>
-                      {item.category}
-                    </span>
-                    
-                    {/* Question */}
-                    <h3 class="text-lg font-semibold text-clay-900 dark:text-clay-100 font-serif pr-4">
-                      {item.question}
-                    </h3>
-                  </div>
-                  
-                  {/* Expand/Collapse Icon */}
-                  <div class="flex-shrink-0">
-                    <div class={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      openItems.value.includes(item.id) 
-                        ? 'bg-gradient-to-r from-clay-500 to-earth-500 text-white shadow-lg' 
-                        : 'bg-gradient-to-r from-clay-100 to-sage-100 text-clay-600'
-                    }`}>
-                      <svg 
-                        class={`w-5 h-5 transition-transform duration-300 ${
-                          openItems.value.includes(item.id) ? 'rotate-180' : ''
-                        }`}
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
+        {/* FAQ Accordion - True 2-column layout */}
+        <div class="flex flex-col md:flex-row md:gap-8">
+          <div class="flex-1 flex flex-col gap-4">
+            {leftColumn.map((item) => (
+              <div key={item.id} class="group mb-0 break-inside-avoid">
+                <div class="bg-gradient-to-br from-white/90 via-sage-50/30 to-clay-50/30 backdrop-blur-sm border-2 border-clay-100 dark:border-clay-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden hover:border-clay-200">
+                  {/* Question Header */}
+                  <button
+                    onClick$={() => toggleItem(item.id)}
+                    class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-clay-50/50 hover:to-sage-50/50 dark:hover:bg-clay-800/50 transition-all duration-200"
+                    aria-expanded={openItems.value.includes(item.id)}
+                    aria-controls={`faq-answer-${item.id}`}
+                  >
+                    <div class="flex items-center space-x-4">
+                      {/* Category Badge */}
+                      <span class={`px-3 py-1 rounded-full text-xs font-semibold border-2 shadow-lg ${getCategoryColor(item.category)}`}>
+                        {item.category}
+                      </span>
+                      
+                      {/* Question */}
+                      <h3 class="text-lg font-semibold text-clay-900 dark:text-clay-100 font-serif pr-4">
+                        {item.question}
+                      </h3>
                     </div>
-                  </div>
-                </button>
-                
-                {/* Answer */}
-                <div 
-                  id={`faq-answer-${item.id}`}
-                  class={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    openItems.value.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                  aria-hidden={!openItems.value.includes(item.id)}
-                >
-                  <div class="px-6 pb-5">
-                    <div class="border-t-2 border-gradient-to-r from-clay-100 to-sage-100 pt-4">
-                      <p class="text-sage-700 dark:text-sage-300 leading-relaxed">
-                        {item.answer}
-                      </p>
+                    
+                    {/* Expand/Collapse Icon */}
+                    <div class="flex-shrink-0">
+                      <div class={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        openItems.value.includes(item.id) 
+                          ? 'bg-gradient-to-r from-clay-500 to-earth-500 text-white shadow-lg' 
+                          : 'bg-gradient-to-r from-clay-100 to-sage-100 text-clay-600'
+                      }`}>
+                        <svg 
+                          class={`w-5 h-5 transition-transform duration-300 ${
+                            openItems.value.includes(item.id) ? 'rotate-180' : ''
+                          }`}
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  {/* Answer */}
+                  <div 
+                    id={`faq-answer-${item.id}`}
+                    class={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      openItems.value.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                    aria-hidden={!openItems.value.includes(item.id)}
+                  >
+                    <div class="px-6 pb-5">
+                      <div class="border-t-2 border-gradient-to-r from-clay-100 to-sage-100 pt-4">
+                        <p class="text-sage-700 dark:text-sage-300 leading-relaxed">
+                          {item.answer}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div class="flex-1 flex flex-col gap-4 mt-4 md:mt-0">
+            {rightColumn.map((item) => (
+              <div key={item.id} class="group mb-0 break-inside-avoid">
+                <div class="bg-gradient-to-br from-white/90 via-sage-50/30 to-clay-50/30 backdrop-blur-sm border-2 border-clay-100 dark:border-clay-700 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden hover:border-clay-200">
+                  {/* Question Header */}
+                  <button
+                    onClick$={() => toggleItem(item.id)}
+                    class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gradient-to-r hover:from-clay-50/50 hover:to-sage-50/50 dark:hover:bg-clay-800/50 transition-all duration-200"
+                    aria-expanded={openItems.value.includes(item.id)}
+                    aria-controls={`faq-answer-${item.id}`}
+                  >
+                    <div class="flex items-center space-x-4">
+                      {/* Category Badge */}
+                      <span class={`px-3 py-1 rounded-full text-xs font-semibold border-2 shadow-lg ${getCategoryColor(item.category)}`}>
+                        {item.category}
+                      </span>
+                      
+                      {/* Question */}
+                      <h3 class="text-lg font-semibold text-clay-900 dark:text-clay-100 font-serif pr-4">
+                        {item.question}
+                      </h3>
+                    </div>
+                    
+                    {/* Expand/Collapse Icon */}
+                    <div class="flex-shrink-0">
+                      <div class={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        openItems.value.includes(item.id) 
+                          ? 'bg-gradient-to-r from-clay-500 to-earth-500 text-white shadow-lg' 
+                          : 'bg-gradient-to-r from-clay-100 to-sage-100 text-clay-600'
+                      }`}>
+                        <svg 
+                          class={`w-5 h-5 transition-transform duration-300 ${
+                            openItems.value.includes(item.id) ? 'rotate-180' : ''
+                          }`}
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  {/* Answer */}
+                  <div 
+                    id={`faq-answer-${item.id}`}
+                    class={`overflow-hidden transition-all duration-300 ease-in-out ${
+                      openItems.value.includes(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                    aria-hidden={!openItems.value.includes(item.id)}
+                  >
+                    <div class="px-6 pb-5">
+                      <div class="border-t-2 border-gradient-to-r from-clay-100 to-sage-100 pt-4">
+                        <p class="text-sage-700 dark:text-sage-300 leading-relaxed">
+                          {item.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Contact CTA */}
