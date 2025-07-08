@@ -73,21 +73,23 @@ export const useFaqsLoader = routeLoader$(async (event) => {
     id: (row as any).id,
     question: (row as any).question,
     answer: (row as any).answer,
-  })) as Array<{ id: number; question: string; answer: string }>;
+    category: (row as any).category || 'General', // Default to 'General' if no category
+  })) as Array<{ id: number; question: string; answer: string; category: string }>;
 });
 
 export const useAddFaq = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO faqs (question, answer) VALUES (?, ?)',
-      [data.question, data.answer]
+      'INSERT INTO faqs (question, answer, category) VALUES (?, ?, ?)',
+      [data.question, data.answer, data.category || 'General']
     );
     return { success: true };
   },
   zod$({
     question: z.string().min(1),
     answer: z.string().min(1),
+    category: z.string().optional(),
   })
 );
 
@@ -95,8 +97,8 @@ export const useUpdateFaq = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE faqs SET question = ?, answer = ? WHERE id = ?',
-      [data.question, data.answer, data.id]
+      'UPDATE faqs SET question = ?, answer = ?, category = ? WHERE id = ?',
+      [data.question, data.answer, data.category || 'General', data.id]
     );
     return { success: true };
   },
@@ -104,6 +106,7 @@ export const useUpdateFaq = routeAction$(
     id: z.string().min(1),
     question: z.string().min(1),
     answer: z.string().min(1),
+    category: z.string().optional(),
   })
 );
 
