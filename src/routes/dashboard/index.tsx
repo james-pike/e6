@@ -2,6 +2,7 @@ import { component$, useSignal } from "@builder.io/qwik";
 import { type RequestHandler, routeLoader$, routeAction$, zod$, z } from "@builder.io/qwik-city";
 import { useSession, useSignOut } from "~/routes/plugin@auth";
 import EventAdmin from '~/components/eventAdmin';
+import FaqAdmin from '~/components/FaqAdmin';
 import { tursoClient } from '~/utils/turso';
 
 // CRUD Loaders/Actions for dashboard
@@ -64,6 +65,57 @@ export const useDeleteClass = routeAction$(
   zod$({ id: z.string().min(1) })
 );
 
+// FAQ CRUD Loaders/Actions
+export const useFaqsLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM faqs ORDER BY id ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    question: (row as any).question,
+    answer: (row as any).answer,
+  })) as Array<{ id: number; question: string; answer: string }>;
+});
+
+export const useAddFaq = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'INSERT INTO faqs (question, answer) VALUES (?, ?)',
+      [data.question, data.answer]
+    );
+    return { success: true };
+  },
+  zod$({
+    question: z.string().min(1),
+    answer: z.string().min(1),
+  })
+);
+
+export const useUpdateFaq = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'UPDATE faqs SET question = ?, answer = ? WHERE id = ?',
+      [data.question, data.answer, data.id]
+    );
+    return { success: true };
+  },
+  zod$({
+    id: z.string().min(1),
+    question: z.string().min(1),
+    answer: z.string().min(1),
+  })
+);
+
+export const useDeleteFaq = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute('DELETE FROM faqs WHERE id = ?', [data.id]);
+    return { success: true };
+  },
+  zod$({ id: z.string().min(1) })
+);
+
 // Route protection - redirect to signin if not authenticated
 export const onRequest: RequestHandler = (event) => {
   const session = event.sharedMap.get('session');
@@ -85,7 +137,7 @@ export default component$(() => {
           <div class="flex justify-between items-center py-6">
             <div class="flex items-center">
               <h1 class="text-2xl font-bold text-clay-900 font-serif">
-                Pottery Studio Dashboard
+                Earthen Vessels Admin
               </h1>
             </div>
             
@@ -155,6 +207,10 @@ export default component$(() => {
           {/* Event Admin Section - Only visible to authenticated users */}
           <div class="mb-12">
             <EventAdmin />
+          </div>
+          {/* FAQ Admin Section */}
+          <div class="mb-12">
+            <FaqAdmin />
           </div>
 
           {/* Dashboard Content */}
