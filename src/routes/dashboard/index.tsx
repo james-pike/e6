@@ -140,14 +140,14 @@ export default component$(() => {
       {/* Main Content */}
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-clay-200/50 p-8">
-          <div class="text-center mb-8">
+          {/* <div class="text-center mb-8">
             <h2 class="text-3xl font-bold text-clay-900 font-serif mb-4">
               Welcome to Your Dashboard
             </h2>
             <p class="text-lg text-sage-700 max-w-2xl mx-auto">
               You've successfully signed in with Twitter! This is a protected page that only authenticated users can access.
             </p>
-          </div>
+          </div> */}
 
           {/* User Info Card */}
           {/* Removed profile info card as requested */}
