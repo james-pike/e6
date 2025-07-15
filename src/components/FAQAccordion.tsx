@@ -1,12 +1,6 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
 import { useFaqsLoader } from "~/routes/index";
 
-interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-  category: string;
-}
 
 // Centralized category gradient mapping
 const CATEGORY_GRADIENTS: Record<string, string> = {
