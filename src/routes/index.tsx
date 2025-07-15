@@ -5,6 +5,8 @@
 import { component$} from '@builder.io/qwik';
 import { routeLoader$, routeAction$, zod$, z } from '@builder.io/qwik-city';
 import type { DocumentHead } from '@builder.io/qwik-city';
+import CallToAction from '~/components/CallToAction';
+import ContactSection from '~/components/ContactSection';
 import FAQAccordion from '~/components/FAQAccordion';
 import Hero from '~/components/Hero';
 import ReviewCarousel from '~/components/ReviewCarousel';
@@ -180,7 +182,8 @@ export default component$(() => {
     
       <ReviewCarousel />
 <FAQAccordion/>
-   
+        <ContactSection />
+      <CallToAction />
 
     
     </>
