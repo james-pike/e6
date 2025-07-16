@@ -20,7 +20,7 @@ This guide will help you set up Twitter OAuth authentication for your pottery st
   - For production: `https://your-domain.com/auth/callback/twitter`
 - **Website URL**: Your app's base URL
 
-### App Permissions
+### App Permissionss
 - Enable "Read" permissions (minimum required)
 - Optionally enable "Write" if you need to post to Twitter
 
