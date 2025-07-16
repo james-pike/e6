@@ -9,13 +9,14 @@ export default defineConfig(() => {
     optimizeDeps: {
       include: ['@auth/qwik']
     },
-    preview: {
-      headers: {
-        'Cache-Control': 'public, max-age=600',
-      },
-    },
     ssr: {
       noExternal: ['@libsql/client']
+    },
+    build: {
+      target: 'node18',
+      rollupOptions: {
+        external: ['fs', 'path', 'crypto']
+      }
     }
   };
-});
+}); 
