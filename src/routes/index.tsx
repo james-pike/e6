@@ -15,70 +15,55 @@ import { tursoClient } from '~/utils/turso';
 
 // Add FAQ loader
 export const useFaqsLoader = routeLoader$(async (event) => {
-  try {
-    const client = tursoClient(event);
-    const result = await client.execute('SELECT * FROM faqs ORDER BY id ASC');
-    return result.rows.map(row => ({
-      id: (row as any).id,
-      question: (row as any).question,
-      answer: (row as any).answer,
-      category: (row as any).category || 'General', // Default to 'General' if no category
-    })) as Array<{ id: number; question: string; answer: string; category: string }>;
-  } catch (error) {
-    console.error('Failed to load FAQs:', error);
-    return []; // Return empty array if database fails
-  }
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM faqs ORDER BY id ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    question: (row as any).question,
+    answer: (row as any).answer,
+    category: (row as any).category || 'General', // Default to 'General' if no category
+  })) as Array<{ id: number; question: string; answer: string; category: string }>;
 });
 
 export const useClassesLoader = routeLoader$(async (event) => {
-  try {
-    const client = tursoClient(event);
-    const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
-    return result.rows.map(row => ({
-      id: (row as any).id,
-      name: (row as any).name,
-      instructor: (row as any).instructor,
-      date: (row as any).date,
-      spots: (row as any).spots,
-      level: (row as any).level,
-    })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
-  } catch (error) {
-    console.error('Failed to load classes:', error);
-    return []; // Return empty array if database fails
-  }
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    name: (row as any).name,
+    instructor: (row as any).instructor,
+    date: (row as any).date,
+    spots: (row as any).spots,
+    level: (row as any).level,
+  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
 });
 
 export const useWorkshopsLoader = routeLoader$(async (event) => {
-  try {
-    const client = tursoClient(event);
-    const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
-    return result.rows.map(row => ({
-      id: (row as any).id,
-      title: (row as any).name,
-      description: (row as any).description || `Join our ${(row as any).level.toLowerCase()} pottery class with ${(row as any).instructor}. Learn the fundamentals of pottery in a hands-on workshop.`,
-      date: (row as any).date,
-      duration: (row as any).duration || '3 hours',
-      price: (row as any).price || '$85',
-      image: (row as any).image || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      instructor: (row as any).instructor,
-      spots: (row as any).spots,
-      level: (row as any).level as 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels',
-    })) as Array<{ 
-      id: number; 
-      title: string; 
-      description: string; 
-      date: string; 
-      duration: string; 
-      price: string; 
-      image: string; 
-      instructor: string; 
-      spots: number; 
-      level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels'; 
-    }>;
-  } catch (error) {
-    console.error('Failed to load workshops:', error);
-    return []; // Return empty array if database fails
-  }
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    title: (row as any).name,
+    description: (row as any).description || `Join our ${(row as any).level.toLowerCase()} pottery class with ${(row as any).instructor}. Learn the fundamentals of pottery in a hands-on workshop.`,
+    date: (row as any).date,
+    duration: (row as any).duration || '3 hours',
+    price: (row as any).price || '$85',
+    image: (row as any).image || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    instructor: (row as any).instructor,
+    spots: (row as any).spots,
+    level: (row as any).level as 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels',
+  })) as Array<{ 
+    id: number; 
+    title: string; 
+    description: string; 
+    date: string; 
+    duration: string; 
+    price: string; 
+    image: string; 
+    instructor: string; 
+    spots: number; 
+    level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels'; 
+  }>;
 });
 
 export const useAddClass = routeAction$(
