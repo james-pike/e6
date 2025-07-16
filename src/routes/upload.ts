@@ -1,7 +1,4 @@
 import { routeAction$, zod$, z } from '@builder.io/qwik-city';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 
 export const useUploadImage = routeAction$(
   async (data, event) => {
@@ -24,30 +21,17 @@ export const useUploadImage = routeAction$(
         return { success: false, error: 'File size must be less than 5MB' };
       }
 
-      // Create uploads directory if it doesn't exist
-      const uploadsDir = join(process.cwd(), 'public', 'uploads');
-      if (!existsSync(uploadsDir)) {
-        await mkdir(uploadsDir, { recursive: true });
-      }
-
-      // Generate unique filename
-      const timestamp = Date.now();
-      const extension = file.name.split('.').pop();
-      const filename = `workshop-${timestamp}.${extension}`;
-      const filepath = join(uploadsDir, filename);
-
-      // Convert file to buffer and save
+      // Convert file to base64 for storage
       const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
-
-      // Return the public URL
-      const publicUrl = `/uploads/${filename}`;
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(bytes)));
+      const dataUrl = `data:${file.type};base64,${base64}`;
       
+      // For now, return the data URL
+      // In production, you'd upload to a service like Cloudinary, S3, etc.
       return { 
         success: true, 
-        url: publicUrl,
-        filename: filename 
+        url: dataUrl,
+        filename: file.name 
       };
     } catch (error) {
       console.error('Upload error:', error);

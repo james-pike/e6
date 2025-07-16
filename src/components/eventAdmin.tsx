@@ -1,7 +1,7 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { Form } from '@builder.io/qwik-city';
 import { useAddClass, useUpdateClass, useDeleteClass, useClassesLoader } from '~/routes/dashboard';
-import { useUploadImage } from '~/routes/api/upload';
+import { useUploadImage } from '~/routes/upload';
 
 interface Workshop {
   id: number;
@@ -10,7 +10,7 @@ interface Workshop {
   date: string;
   spots: number;
   level: string;
-  image?: string;
+  image?: string | null;
 }
 
 export default component$(() => {
@@ -22,7 +22,6 @@ export default component$(() => {
   const editingId = useSignal<string | null>(null);
   const form = useSignal<Partial<Workshop>>({});
   const isUploading = useSignal(false);
-  const selectedFile = useSignal<File | null>(null);
   const previewUrl = useSignal<string>('');
 
   // Handle form input changes
@@ -34,28 +33,27 @@ export default component$(() => {
   const handleFileSelect = $((e: any) => {
     const file = e.target.files?.[0];
     if (file) {
-      selectedFile.value = file;
       // Create preview URL
       const url = URL.createObjectURL(file);
       previewUrl.value = url;
+      
+      // Upload immediately when file is selected
+      handleImageUpload(file);
     }
   });
 
   // Handle image upload
-  const handleImageUpload = $(async () => {
-    if (!selectedFile.value) return;
-
+  const handleImageUpload = $(async (file: File) => {
     isUploading.value = true;
     try {
       const formData = new FormData();
-      formData.append('image', selectedFile.value);
+      formData.append('image', file);
       
       const result = await uploadAction.submit(formData);
       
       if (result.value?.success) {
         form.value = { ...form.value, image: result.value.url };
-        // Clear the file input and preview
-        selectedFile.value = null;
+        // Clear the preview
         previewUrl.value = '';
       } else {
         console.error('Upload failed:', result.value?.error);
@@ -109,15 +107,8 @@ export default component$(() => {
                 onChange$={handleFileSelect}
                 class="border border-clay-300 rounded-lg px-4 py-2 bg-white w-full max-w-xs"
               />
-              {selectedFile.value && (
-                <button
-                  type="button"
-                  onClick$={handleImageUpload}
-                  disabled={isUploading.value}
-                  class="px-4 py-2 bg-clay-600 text-white rounded-lg hover:bg-clay-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isUploading.value ? 'Uploading...' : 'Upload'}
-                </button>
+              {isUploading.value && (
+                <span class="text-sage-600">Uploading...</span>
               )}
             </div>
             
@@ -125,7 +116,7 @@ export default component$(() => {
             {(previewUrl.value || form.value.image) && (
               <div class="mt-3">
                 <img 
-                  src={previewUrl.value || form.value.image} 
+                  src={previewUrl.value || form.value.image || ''} 
                   alt="Preview" 
                   class="h-32 w-32 object-cover rounded-lg border border-clay-200"
                 />
