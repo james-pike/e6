@@ -1,7 +1,4 @@
 import { routeAction$, zod$, z } from '@builder.io/qwik-city';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
 
 export const useUploadImage = routeAction$(
   async (data, event) => {
@@ -18,36 +15,27 @@ export const useUploadImage = routeAction$(
         return { success: false, error: 'File must be an image' };
       }
 
-      // Validate file size (e.g., 5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      // Validate file size (e.g., 2MB limit for base64 storage)
+      const maxSize = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSize) {
-        return { success: false, error: 'File size must be less than 5MB' };
+        return { success: false, error: 'File size must be less than 2MB' };
       }
 
-      // Create uploads directory if it doesn't exist
-      const uploadsDir = join(process.cwd(), 'public', 'uploads');
-      if (!existsSync(uploadsDir)) {
-        await mkdir(uploadsDir, { recursive: true });
-      }
-
-      // Generate unique filename
-      const timestamp = Date.now();
-      const extension = file.name.split('.').pop();
-      const filename = `workshop-${timestamp}.${extension}`;
-      const filepath = join(uploadsDir, filename);
-
-      // Convert file to buffer and save
+      // Convert file to base64
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      await writeFile(filepath, buffer);
+      const base64String = buffer.toString('base64');
+      const dataUrl = `data:${file.type};base64,${base64String}`;
 
-      // Return the public URL
-      const publicUrl = `/uploads/${filename}`;
+      // Store in database (you can create a separate table for images if needed)
+      // For now, we'll return the data URL directly
+      // In a production app, you might want to store this in a separate images table
       
       return { 
         success: true, 
-        url: publicUrl,
-        filename: filename 
+        url: dataUrl,
+        filename: file.name,
+        type: file.type
       };
     } catch (error) {
       console.error('Upload error:', error);
