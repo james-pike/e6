@@ -108,7 +108,7 @@ export default component$(() => {
                 class="border border-clay-300 rounded-lg px-4 py-2 bg-white w-full max-w-xs"
               />
               {isUploading.value && (
-                <span class="text-sage-600">Uploading...</span>
+                <span class="text-sage-500">Uploading...</span>
               )}
             </div>
             
