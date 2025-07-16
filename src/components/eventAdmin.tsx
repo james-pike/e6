@@ -9,6 +9,7 @@ interface Workshop {
   date: string;
   spots: number;
   level: string;
+  image?: string; // base64 image data
 }
 
 export default component$(() => {
@@ -22,6 +23,29 @@ export default component$(() => {
   // Handle form input changes
   const handleInput = $((e: any) => {
     form.value = { ...form.value, [e.target.name]: e.target.value };
+  });
+
+  // Handle image upload and convert to base64
+  const handleImageUpload = $((e: any) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (limit to 2MB to keep database reasonable)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image must be smaller than 2MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        form.value = { ...form.value, image: reader.result as string };
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Remove image
+  const removeImage = $(() => {
+    form.value = { ...form.value, image: undefined };
   });
 
   // Edit workshop
@@ -52,6 +76,40 @@ export default component$(() => {
               <option value="All Levels">All Levels</option>
             </select>
           </div>
+          
+          {/* Image Upload Section */}
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-clay-900 mb-2">Workshop Image</label>
+            <div class="flex items-center space-x-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange$={handleImageUpload}
+                class="border border-clay-300 rounded-lg px-4 py-2 bg-white w-full max-w-xs"
+              />
+              {form.value.image && (
+                <button
+                  type="button"
+                  onClick$={removeImage}
+                  class="px-3 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+            {form.value.image && (
+              <div class="mt-3">
+                <img 
+                  src={form.value.image} 
+                  alt="Preview" 
+                  class="h-32 w-32 object-cover rounded-lg border border-clay-200" 
+                />
+                <p class="text-xs text-sage-600 mt-1">Image preview (max 2MB)</p>
+              </div>
+            )}
+            <input type="hidden" name="image" value={form.value.image || ''} />
+          </div>
+
           <div class="flex gap-2 flex-wrap">
             <button type="submit" class="px-6 py-2 bg-sage-600 text-white rounded-full text-sm font-medium hover:bg-sage-700 transition-colors">
               {editingId.value ? 'Update' : 'Add'}
@@ -79,6 +137,7 @@ export default component$(() => {
               <table class="min-w-full divide-y divide-gray-200 rounded-xl overflow-hidden">
                 <thead class="bg-gray-50">
                   <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructor</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -90,6 +149,19 @@ export default component$(() => {
                 <tbody class="bg-white divide-y divide-gray-200">
                   {workshops.value.map((workshop) => (
                     <tr key={workshop.id} class={editingId.value === String(workshop.id) ? 'bg-sage-50' : 'hover:bg-gray-50'}>
+                      <td class="px-4 py-3 whitespace-nowrap">
+                        {workshop.image ? (
+                          <img 
+                            src={workshop.image} 
+                            alt={workshop.name} 
+                            class="h-12 w-12 object-cover rounded-lg border border-clay-200" 
+                          />
+                        ) : (
+                          <div class="h-12 w-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <span class="text-gray-400 text-xs">No img</span>
+                          </div>
+                        )}
+                      </td>
                       <td class="px-4 py-3 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">{workshop.name}</div>
                       </td>
@@ -129,16 +201,29 @@ export default component$(() => {
             <div class="md:hidden flex flex-col gap-4">
               {workshops.value.map((workshop) => (
                 <div key={workshop.id} class="bg-white rounded-xl shadow border border-clay-100 p-4 flex flex-col gap-2">
-                  <div class="flex justify-between items-center mb-1">
-                    <div class="font-semibold text-clay-900 text-base">{workshop.name}</div>
-                    <span class={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      workshop.level === 'Beginner' ? 'bg-green-100 text-green-800' :
-                      workshop.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                      workshop.level === 'Advanced' ? 'bg-red-100 text-red-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {workshop.level}
-                    </span>
+                  <div class="flex items-center space-x-3 mb-2">
+                    {workshop.image ? (
+                      <img 
+                        src={workshop.image} 
+                        alt={workshop.name} 
+                        class="h-16 w-16 object-cover rounded-lg border border-clay-200" 
+                      />
+                    ) : (
+                      <div class="h-16 w-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-400 text-xs">No img</span>
+                      </div>
+                    )}
+                    <div class="flex-1">
+                      <div class="font-semibold text-clay-900 text-base">{workshop.name}</div>
+                      <span class={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        workshop.level === 'Beginner' ? 'bg-green-100 text-green-800' :
+                        workshop.level === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
+                        workshop.level === 'Advanced' ? 'bg-red-100 text-red-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {workshop.level}
+                      </span>
+                    </div>
                   </div>
                   <div class="text-sm text-sage-700 mb-1">Instructor: <span class="text-clay-900 font-medium">{workshop.instructor}</span></div>
                   <div class="text-sm text-sage-700 mb-1">Date: <span class="text-clay-900 font-medium">{workshop.date}</span></div>

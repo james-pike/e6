@@ -16,15 +16,16 @@ export const useClassesLoader = routeLoader$(async (event) => {
     date: (row as any).date,
     spots: (row as any).spots,
     level: (row as any).level,
-  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
+    image: (row as any).image,
+  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string; image?: string }>;
 });
 
 export const useAddClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO classes (name, instructor, date, spots, level) VALUES (?, ?, ?, ?, ?)',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level]
+      'INSERT INTO classes (name, instructor, date, spots, level, image) VALUES (?, ?, ?, ?, ?, ?)',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null]
     );
     return { success: true };
   },
@@ -34,6 +35,7 @@ export const useAddClass = routeAction$(
     date: z.string().min(1),
     spots: z.string().min(1),
     level: z.string().min(1),
+    image: z.string().optional(),
   })
 );
 
@@ -41,8 +43,8 @@ export const useUpdateClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ? WHERE id = ?',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.id]
+      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ?, image = ? WHERE id = ?',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.id]
     );
     return { success: true };
   },
@@ -53,6 +55,7 @@ export const useUpdateClass = routeAction$(
     date: z.string().min(1),
     spots: z.string().min(1),
     level: z.string().min(1),
+    image: z.string().optional(),
   })
 );
 

@@ -35,7 +35,8 @@ export const useClassesLoader = routeLoader$(async (event) => {
     date: (row as any).date,
     spots: (row as any).spots,
     level: (row as any).level,
-  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string }>;
+    image: (row as any).image,
+  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string; image?: string }>;
 });
 
 export const useWorkshopsLoader = routeLoader$(async (event) => {
