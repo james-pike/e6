@@ -143,7 +143,7 @@ export default component$(() => {
       </div>
     </div>
   );
-});
+}); 
 
 // Helper function to get category colors (same as in FAQAccordion)
 function getCategoryColor(category: string) {
