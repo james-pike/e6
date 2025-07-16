@@ -3,7 +3,7 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "functions": {
-    "src/routes/upload.ts": {
+    "src/routes/api/upload.ts": {
       "runtime": "@vercel/node@3.0.0"
     }
   }
