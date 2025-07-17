@@ -3,6 +3,7 @@ import { type RequestHandler, routeLoader$, routeAction$, zod$, z } from "@build
 import { useSession, useSignOut } from "~/routes/plugin@auth";
 import EventAdmin from '~/components/eventAdmin';
 import FaqAdmin from '~/components/FaqAdmin';
+import ReviewAdmin from '~/components/ReviewAdmin';
 import { tursoClient } from '~/utils/turso';
 
 // CRUD Loaders/Actions for dashboard
@@ -277,6 +278,10 @@ export default component$(() => {
           {/* FAQ Admin Section */}
           <div class="mb-12">
             <FaqAdmin />
+          </div>
+          {/* Review Admin Section */}
+          <div class="mb-12">
+            <ReviewAdmin />
           </div>
 
           {/* Dashboard Content */}
