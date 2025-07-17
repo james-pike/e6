@@ -6,12 +6,18 @@ export default component$(() => {
   const isAutoPlaying = useSignal(true);
   const reviews = useReviewsLoader();
 
+  // Number of reviews per slide (desktop)
+  const REVIEWS_PER_SLIDE = 3;
+
+  // Calculate the number of slides needed
+  const numSlides = () => Math.ceil(reviews.value.length / REVIEWS_PER_SLIDE);
+
   const nextSlide = $(() => {
-    currentIndex.value = (currentIndex.value + 1) % reviews.value.length;
+    currentIndex.value = (currentIndex.value + 1) % numSlides();
   });
 
   const prevSlide = $(() => {
-    currentIndex.value = currentIndex.value === 0 ? reviews.value.length - 1 : currentIndex.value - 1;
+    currentIndex.value = currentIndex.value === 0 ? numSlides() - 1 : currentIndex.value - 1;
   });
 
   const goToSlide = $((index: number) => {
@@ -53,6 +59,12 @@ export default component$(() => {
     ));
   };
 
+  // Helper to get reviews for the current slide
+  const getSlideReviews = () => {
+    const start = currentIndex.value * REVIEWS_PER_SLIDE;
+    return reviews.value.slice(start, start + REVIEWS_PER_SLIDE);
+  };
+
   return (
     <section class="relative overflow-hidden py-16 md:py-20">
       {/* Background with pottery texture */}
@@ -82,47 +94,50 @@ export default component$(() => {
 
         {/* Carousel Container */}
         <div class="relative max-w-6xl mx-auto">
-          {/* Desktop Carousel */}
+          {/* Desktop Carousel: 3 reviews per slide */}
           <div class="hidden md:block relative overflow-hidden rounded-3xl shadow-2xl border-2 border-clay-200/50">
-            <div 
+            <div
               class="flex transition-transform duration-500 ease-in-out"
-              style={`transform: translateX(-${currentIndex.value * 100}%)`}
+              style={`width: ${numSlides() * 100}%; transform: translateX(-${currentIndex.value * (100 / numSlides())}%);`}
             >
-              {reviews.value.map((review) => (
-                <div key={review.id} class="w-full flex-shrink-0">
-                  <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm p-12 md:p-16">
-                    <div class="max-w-4xl mx-auto text-center">
-                      {/* Stars */}
-                      <div class="flex justify-center mb-6">
-                        <div class="flex space-x-1">
-                          {renderStars(review.rating)}
+              {Array.from({ length: numSlides() }).map((_, slideIdx) => (
+                <div key={slideIdx} class="flex w-full">
+                  {reviews.value.slice(slideIdx * REVIEWS_PER_SLIDE, slideIdx * REVIEWS_PER_SLIDE + REVIEWS_PER_SLIDE).map((review) => (
+                    <div key={review.id} class="w-1/3 flex-shrink-0">
+                      <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm p-12 md:p-16 h-full flex flex-col justify-center">
+                        <div class="max-w-4xl mx-auto text-center">
+                          {/* Stars */}
+                          <div class="flex justify-center mb-6">
+                            <div class="flex space-x-1">
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+                          {/* Review Text */}
+                          <blockquote class="text-2xl md:text-3xl font-serif text-clay-900 dark:text-clay-100 mb-8 leading-relaxed">
+                            "{review.review}"
+                          </blockquote>
+                          {/* Customer Info */}
+                          <div class="flex items-center justify-center space-x-4 mb-6">
+                            <div class="text-left">
+                              <h4 class="text-lg font-bold text-clay-900 dark:text-clay-100 font-serif">
+                                {review.name}
+                              </h4>
+                              {review.role && <p class="text-sage-600 dark:text-sage-400 text-sm">{review.role}</p>}
+                            </div>
+                          </div>
+                          {/* Date */}
+                          <p class="text-sage-500 dark:text-sage-400 text-sm mt-4">
+                            {review.date}
+                          </p>
                         </div>
                       </div>
-                      {/* Review Text */}
-                      <blockquote class="text-2xl md:text-3xl font-serif text-clay-900 dark:text-clay-100 mb-8 leading-relaxed">
-                        "{review.review}"
-                      </blockquote>
-                      {/* Customer Info */}
-                      <div class="flex items-center justify-center space-x-4 mb-6">
-                        <div class="text-left">
-                          <h4 class="text-lg font-bold text-clay-900 dark:text-clay-100 font-serif">
-                            {review.name}
-                          </h4>
-                          {review.role && <p class="text-sage-600 dark:text-sage-400 text-sm">{review.role}</p>}
-                        </div>
-                      </div>
-                      {/* Date */}
-                      <p class="text-sage-500 dark:text-sage-400 text-sm mt-4">
-                        {review.date}
-                      </p>
                     </div>
-                  </div>
+                  ))}
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Mobile Scrollable Carousel */}
+          {/* Mobile Scrollable Carousel (unchanged) */}
           <div class="md:hidden">
             <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
               {reviews.value.map((review) => (
@@ -134,12 +149,10 @@ export default component$(() => {
                         {renderStars(review.rating)}
                       </div>
                     </div>
-
                     {/* Review Text */}
                     <blockquote class="text-lg font-serif text-clay-900 dark:text-clay-100 mb-6 leading-relaxed">
                       "{review.review}"
                     </blockquote>
-
                     {/* Customer Info */}
                     <div class="flex items-center space-x-3 mb-4">
                       <div class="text-left">
@@ -149,7 +162,6 @@ export default component$(() => {
                         {review.role && <p class="text-sage-600 dark:text-sage-400 text-xs">{review.role}</p>}
                       </div>
                     </div>
-
                     {/* Date */}
                     <p class="text-sage-500 dark:text-sage-400 text-xs mt-3">
                       {review.date}
@@ -159,7 +171,6 @@ export default component$(() => {
               ))}
             </div>
           </div>
-
           {/* Navigation Arrows - Desktop Only */}
           <button
             onClick$={prevSlide}
@@ -172,7 +183,6 @@ export default component$(() => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
           </button>
-
           <button
             onClick$={nextSlide}
             onMouseEnter$={stopAutoPlay}
@@ -184,10 +194,9 @@ export default component$(() => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
             </svg>
           </button>
-
           {/* Dots Indicator - Desktop Only */}
           <div class="hidden md:flex justify-center mt-8 space-x-2">
-            {reviews.value.map((_, index) => (
+            {Array.from({ length: numSlides() }).map((_, index) => (
               <button
                 key={index}
                 onClick$={() => goToSlide(index)}
@@ -198,7 +207,7 @@ export default component$(() => {
                     ? 'bg-gradient-to-r from-clay-600 to-earth-600 scale-125 shadow-lg'
                     : 'bg-clay-300 hover:bg-clay-400'
                 }`}
-                aria-label={`Go to review ${index + 1}`}
+                aria-label={`Go to review slide ${index + 1}`}
               />
             ))}
           </div>
