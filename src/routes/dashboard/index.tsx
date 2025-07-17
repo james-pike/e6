@@ -17,15 +17,16 @@ export const useClassesLoader = routeLoader$(async (event) => {
     spots: (row as any).spots,
     level: (row as any).level,
     image: (row as any).image,
-  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string; image?: string }>;
+    description: (row as any).description,
+  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string; image?: string; description?: string }>;
 });
 
 export const useAddClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO classes (name, instructor, date, spots, level, image) VALUES (?, ?, ?, ?, ?, ?)',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null]
+      'INSERT INTO classes (name, instructor, date, spots, level, image, description) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.description || null]
     );
     return { success: true };
   },
@@ -36,6 +37,7 @@ export const useAddClass = routeAction$(
     spots: z.string().min(1),
     level: z.string().min(1),
     image: z.string().optional(),
+    description: z.string().optional(),
   })
 );
 
@@ -43,8 +45,8 @@ export const useUpdateClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ?, image = ? WHERE id = ?',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.id]
+      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ?, image = ?, description = ? WHERE id = ?',
+      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.description || null, data.id]
     );
     return { success: true };
   },
@@ -56,6 +58,7 @@ export const useUpdateClass = routeAction$(
     spots: z.string().min(1),
     level: z.string().min(1),
     image: z.string().optional(),
+    description: z.string().optional(),
   })
 );
 
