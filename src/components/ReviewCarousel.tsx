@@ -50,6 +50,25 @@ export default component$(() => {
     }
   });
 
+  // Helper to format date as relative time (e.g., '3 days ago')
+  function formatRelativeDate(dateString: string) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+    const diffWeek = Math.floor(diffDay / 7);
+    const diffMonth = Math.floor(diffDay / 30);
+    if (diffMonth > 0) return `${diffMonth} month${diffMonth > 1 ? 's' : ''} ago`;
+    if (diffWeek > 0) return `${diffWeek} week${diffWeek > 1 ? 's' : ''} ago`;
+    if (diffDay > 0) return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+    if (diffHour > 0) return `${diffHour} hour${diffHour > 1 ? 's' : ''} ago`;
+    if (diffMin > 0) return `${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+    return 'just now';
+  }
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <svg
@@ -98,55 +117,12 @@ export default component$(() => {
             </div>
           ) : (
             <>
-              {/* Desktop Carousel: 3 reviews per slide */}
-              <div class="hidden md:block relative overflow-hidden rounded-3xl shadow-2xl border-2 border-clay-200/50">
-                <div 
-                  class="flex transition-transform duration-500 ease-in-out"
-                  style={`width: ${numSlides * 100}%; transform: translateX(-${currentIndex.value * (100 / (numSlides || 1))}%);`}
-                >
-                  {slides.map((slideIdx) => (
-                    <div key={slideIdx} class="flex w-full">
-                      {safeReviews.slice(slideIdx * REVIEWS_PER_SLIDE, slideIdx * REVIEWS_PER_SLIDE + REVIEWS_PER_SLIDE).map((review) => (
-                        <div key={review.id} class="w-1/3 flex-shrink-0">
-                          <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm p-12 md:p-16 h-full flex flex-col justify-center">
-                        <div class="max-w-4xl mx-auto text-center">
-                          {/* Stars */}
-                          <div class="flex justify-center mb-6">
-                            <div class="flex space-x-1">
-                              {renderStars(review.rating)}
-                            </div>
-                          </div>
-                          {/* Review Text */}
-                          <blockquote class="text-2xl md:text-3xl font-serif text-clay-900 dark:text-clay-100 mb-8 leading-relaxed">
-                            "{review.review}"
-                          </blockquote>
-                          {/* Customer Info */}
-                          <div class="flex items-center justify-center space-x-4 mb-6">
-                            <div class="text-left">
-                              <h4 class="text-lg font-bold text-clay-900 dark:text-clay-100 font-serif">
-                                {review.name}
-                              </h4>
-                                  {review.role && <p class="text-sage-600 dark:text-sage-400 text-sm">{review.role}</p>}
-                            </div>
-                          </div>
-                          {/* Date */}
-                          <p class="text-sage-500 dark:text-sage-400 text-sm mt-4">
-                            {review.date}
-                          </p>
-                        </div>
-                      </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Mobile Scrollable Carousel (unchanged) */}
-              <div class="md:hidden">
-                <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+              {/* Unified Card Carousel: One card per review, scrollable on all breakpoints */}
+              <div class="overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-6">
                   {safeReviews.map((review) => (
-                    <div key={review.id} class="flex-shrink-0 w-80 snap-center mr-6 last:mr-0">
-                      <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-clay-200/50">
+                    <div key={review.id} class="flex-shrink-0 w-80 snap-center">
+                      <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-clay-200/50 flex flex-col h-full">
                         {/* Stars */}
                         <div class="flex justify-center mb-4">
                           <div class="flex space-x-1">
@@ -168,54 +144,12 @@ export default component$(() => {
                         </div>
                         {/* Date */}
                         <p class="text-sage-500 dark:text-sage-400 text-xs mt-3">
-                          {review.date}
+                          {formatRelativeDate(review.date)}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
-              {/* Navigation Arrows - Desktop Only */}
-              <button
-                onClick$={prevSlide}
-                onMouseEnter$={stopAutoPlay}
-                onMouseLeave$={startAutoPlay}
-                class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-r from-white/90 to-sage-50/90 backdrop-blur-sm rounded-full shadow-lg items-center justify-center text-clay-600 hover:text-clay-800 hover:scale-110 transition-all duration-200 z-10 border border-clay-200/50"
-                aria-label="Previous review"
-                disabled={numSlides === 0}
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-              </button>
-              <button
-                onClick$={nextSlide}
-                onMouseEnter$={stopAutoPlay}
-                onMouseLeave$={startAutoPlay}
-                class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-r from-white/90 to-sage-50/90 backdrop-blur-sm rounded-full shadow-lg items-center justify-center text-clay-600 hover:text-clay-800 hover:scale-110 transition-all duration-200 z-10 border border-clay-200/50"
-                aria-label="Next review"
-                disabled={numSlides === 0}
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </button>
-              {/* Dots Indicator - Desktop Only */}
-              <div class="hidden md:flex justify-center mt-8 space-x-2">
-                {slides.map((index) => (
-                  <button
-                    key={index}
-                    onClick$={() => goToSlide(index)}
-                    onMouseEnter$={stopAutoPlay}
-                    onMouseLeave$={startAutoPlay}
-                    class={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index === currentIndex.value
-                        ? 'bg-gradient-to-r from-clay-600 to-earth-600 scale-125 shadow-lg'
-                        : 'bg-clay-300 hover:bg-clay-400'
-                    }`}
-                    aria-label={`Go to review slide ${index + 1}`}
-                  />
-                ))}
               </div>
             </>
           )}
