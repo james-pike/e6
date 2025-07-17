@@ -192,8 +192,10 @@ export default component$(() => {
                           {workshop.level}
                         </span>
                       </td>
-                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{workshop.description}</td>
-                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 flex gap-2">
+                      <td class="px-4 py-3 max-w-xs truncate text-sm text-gray-900" title={workshop.description}>
+                        {workshop.description}
+                      </td>
+                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 flex gap-2 sticky right-0 bg-white z-10">
                         <button
                           class="text-blue-600 hover:underline mr-2"
                           onClick$={() => handleEdit(workshop)}
