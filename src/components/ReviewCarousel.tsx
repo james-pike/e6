@@ -9,17 +9,19 @@ export default component$(() => {
   // Number of reviews per slide (desktop)
   const REVIEWS_PER_SLIDE = 3;
 
-  // Calculate the number of slides needed (regular function, not $)
-  function numSlides() {
-    return Math.ceil(reviews.value.length / REVIEWS_PER_SLIDE);
-  }
+  // Defensive: always treat reviews.value as an array
+  const safeReviews = Array.isArray(reviews.value) ? reviews.value : [];
+
+  // Precompute number of slides and slides array (Qwik-friendly)
+  const numSlides = Math.max(0, Math.ceil((Number.isFinite(safeReviews.length) ? safeReviews.length : 0) / Math.max(1, REVIEWS_PER_SLIDE)));
+  const slides = Array.from({ length: numSlides }, (_, i) => i);
 
   const nextSlide = $(() => {
-    currentIndex.value = (currentIndex.value + 1) % numSlides();
+    currentIndex.value = (currentIndex.value + 1) % numSlides;
   });
 
   const prevSlide = $(() => {
-    currentIndex.value = currentIndex.value === 0 ? numSlides() - 1 : currentIndex.value - 1;
+    currentIndex.value = currentIndex.value === 0 ? numSlides - 1 : currentIndex.value - 1;
   });
 
   const goToSlide = $((index: number) => {
@@ -40,7 +42,7 @@ export default component$(() => {
     track(() => isAutoPlaying.value);
     if (typeof window !== 'undefined') {
       const interval = setInterval(() => {
-        if (isAutoPlaying.value && reviews.value.length > 0) {
+        if (isAutoPlaying.value && safeReviews.length > 0) {
           nextSlide();
         }
       }, 4000);
@@ -90,7 +92,7 @@ export default component$(() => {
 
         {/* Carousel Container */}
         <div class="relative max-w-6xl mx-auto">
-          {(!reviews.value || reviews.value.length === 0) ? (
+          {(safeReviews.length === 0) ? (
             <div class="text-center py-12 text-sage-600 text-lg">
               No reviews available yet.
             </div>
@@ -100,11 +102,11 @@ export default component$(() => {
               <div class="hidden md:block relative overflow-hidden rounded-3xl shadow-2xl border-2 border-clay-200/50">
                 <div 
                   class="flex transition-transform duration-500 ease-in-out"
-                  style={`width: ${numSlides() * 100}%; transform: translateX(-${currentIndex.value * (100 / numSlides())}%);`}
+                  style={`width: ${numSlides * 100}%; transform: translateX(-${currentIndex.value * (100 / (numSlides || 1))}%);`}
                 >
-                  {Array.from({ length: numSlides() }).map((_, slideIdx) => (
+                  {slides.map((slideIdx) => (
                     <div key={slideIdx} class="flex w-full">
-                      {reviews.value.slice(slideIdx * REVIEWS_PER_SLIDE, slideIdx * REVIEWS_PER_SLIDE + REVIEWS_PER_SLIDE).map((review) => (
+                      {safeReviews.slice(slideIdx * REVIEWS_PER_SLIDE, slideIdx * REVIEWS_PER_SLIDE + REVIEWS_PER_SLIDE).map((review) => (
                         <div key={review.id} class="w-1/3 flex-shrink-0">
                           <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm p-12 md:p-16 h-full flex flex-col justify-center">
                         <div class="max-w-4xl mx-auto text-center">
@@ -142,7 +144,7 @@ export default component$(() => {
               {/* Mobile Scrollable Carousel (unchanged) */}
               <div class="md:hidden">
                 <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                  {reviews.value.map((review) => (
+                  {safeReviews.map((review) => (
                     <div key={review.id} class="flex-shrink-0 w-80 snap-center mr-6 last:mr-0">
                       <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-clay-200/50">
                         {/* Stars */}
@@ -180,7 +182,7 @@ export default component$(() => {
                 onMouseLeave$={startAutoPlay}
                 class="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-r from-white/90 to-sage-50/90 backdrop-blur-sm rounded-full shadow-lg items-center justify-center text-clay-600 hover:text-clay-800 hover:scale-110 transition-all duration-200 z-10 border border-clay-200/50"
                 aria-label="Previous review"
-                disabled={numSlides() === 0}
+                disabled={numSlides === 0}
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -192,7 +194,7 @@ export default component$(() => {
                 onMouseLeave$={startAutoPlay}
                 class="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gradient-to-r from-white/90 to-sage-50/90 backdrop-blur-sm rounded-full shadow-lg items-center justify-center text-clay-600 hover:text-clay-800 hover:scale-110 transition-all duration-200 z-10 border border-clay-200/50"
                 aria-label="Next review"
-                disabled={numSlides() === 0}
+                disabled={numSlides === 0}
               >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -200,7 +202,7 @@ export default component$(() => {
               </button>
               {/* Dots Indicator - Desktop Only */}
               <div class="hidden md:flex justify-center mt-8 space-x-2">
-                {Array.from({ length: numSlides() }).map((_, index) => (
+                {slides.map((index) => (
                   <button
                     key={index}
                     onClick$={() => goToSlide(index)}
