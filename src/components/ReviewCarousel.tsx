@@ -96,7 +96,7 @@ export default component$(() => {
         <div class="relative max-w-6xl mx-auto">
           {/* Desktop Carousel: 3 reviews per slide */}
           <div class="hidden md:block relative overflow-hidden rounded-3xl shadow-2xl border-2 border-clay-200/50">
-            <div
+            <div 
               class="flex transition-transform duration-500 ease-in-out"
               style={`width: ${numSlides() * 100}%; transform: translateX(-${currentIndex.value * (100 / numSlides())}%);`}
             >
@@ -105,32 +105,32 @@ export default component$(() => {
                   {reviews.value.slice(slideIdx * REVIEWS_PER_SLIDE, slideIdx * REVIEWS_PER_SLIDE + REVIEWS_PER_SLIDE).map((review) => (
                     <div key={review.id} class="w-1/3 flex-shrink-0">
                       <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm p-12 md:p-16 h-full flex flex-col justify-center">
-                        <div class="max-w-4xl mx-auto text-center">
-                          {/* Stars */}
-                          <div class="flex justify-center mb-6">
-                            <div class="flex space-x-1">
-                              {renderStars(review.rating)}
-                            </div>
-                          </div>
-                          {/* Review Text */}
-                          <blockquote class="text-2xl md:text-3xl font-serif text-clay-900 dark:text-clay-100 mb-8 leading-relaxed">
-                            "{review.review}"
-                          </blockquote>
-                          {/* Customer Info */}
-                          <div class="flex items-center justify-center space-x-4 mb-6">
-                            <div class="text-left">
-                              <h4 class="text-lg font-bold text-clay-900 dark:text-clay-100 font-serif">
-                                {review.name}
-                              </h4>
-                              {review.role && <p class="text-sage-600 dark:text-sage-400 text-sm">{review.role}</p>}
-                            </div>
-                          </div>
-                          {/* Date */}
-                          <p class="text-sage-500 dark:text-sage-400 text-sm mt-4">
-                            {review.date}
-                          </p>
+                    <div class="max-w-4xl mx-auto text-center">
+                      {/* Stars */}
+                      <div class="flex justify-center mb-6">
+                        <div class="flex space-x-1">
+                          {renderStars(review.rating)}
                         </div>
                       </div>
+                      {/* Review Text */}
+                      <blockquote class="text-2xl md:text-3xl font-serif text-clay-900 dark:text-clay-100 mb-8 leading-relaxed">
+                        "{review.review}"
+                      </blockquote>
+                      {/* Customer Info */}
+                      <div class="flex items-center justify-center space-x-4 mb-6">
+                        <div class="text-left">
+                          <h4 class="text-lg font-bold text-clay-900 dark:text-clay-100 font-serif">
+                            {review.name}
+                          </h4>
+                              {review.role && <p class="text-sage-600 dark:text-sage-400 text-sm">{review.role}</p>}
+                        </div>
+                      </div>
+                      {/* Date */}
+                      <p class="text-sage-500 dark:text-sage-400 text-sm mt-4">
+                        {review.date}
+                      </p>
+                    </div>
+                  </div>
                     </div>
                   ))}
                 </div>

@@ -10,6 +10,7 @@ interface Workshop {
   spots: number;
   level: string;
   image?: string; // base64 image data
+  description?: string; // Added description field
 }
 
 export default component$(() => {
@@ -75,6 +76,18 @@ export default component$(() => {
               <option value="Advanced">Advanced</option>
               <option value="All Levels">All Levels</option>
             </select>
+          </div>
+          {/* Description Field */}
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-clay-900 mb-2">Description</label>
+            <textarea
+              name="description"
+              value={form.value.description || ''}
+              onInput$={handleInput}
+              placeholder="Workshop description"
+              rows={3}
+              class="border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300 w-full resize-vertical"
+            />
           </div>
           
           {/* Image Upload Section */}
@@ -143,6 +156,7 @@ export default component$(() => {
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spots</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -178,6 +192,7 @@ export default component$(() => {
                           {workshop.level}
                         </span>
                       </td>
+                      <td class="px-4 py-3 whitespace-pre-line text-sm text-gray-900 max-w-xs break-words">{workshop.description}</td>
                       <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 flex gap-2">
                         <button
                           class="text-blue-600 hover:underline mr-2"
@@ -228,6 +243,7 @@ export default component$(() => {
                   <div class="text-sm text-sage-700 mb-1">Instructor: <span class="text-clay-900 font-medium">{workshop.instructor}</span></div>
                   <div class="text-sm text-sage-700 mb-1">Date: <span class="text-clay-900 font-medium">{workshop.date}</span></div>
                   <div class="text-sm text-sage-700 mb-1">Spots: <span class="text-clay-900 font-medium">{workshop.spots}</span></div>
+                  <div class="text-sm text-sage-700 mb-1 whitespace-pre-line">{workshop.description}</div>
                   <div class="flex gap-3 mt-2">
                     <button
                       class="flex-1 px-3 py-2 bg-sage-600 text-white rounded-full text-xs font-medium hover:bg-sage-700 transition-colors"
