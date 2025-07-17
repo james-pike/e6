@@ -125,6 +125,63 @@ export const useDeleteFaq = routeAction$(
   zod$({ id: z.string().min(1) })
 );
 
+// Reviews CRUD Loaders/Actions
+export const useReviewsLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM reviews ORDER BY id ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    name: (row as any).name,
+    review: (row as any).review,
+    rating: (row as any).rating,
+    date: (row as any).date,
+  })) as Array<{ id: number; name: string; review: string; rating: number; date: string }>;
+});
+
+export const useAddReview = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'INSERT INTO reviews (name, review, rating, date) VALUES (?, ?, ?, ?)',
+      [data.name, data.review, Number(data.rating), data.date]
+    );
+    return { success: true };
+  },
+  zod$({
+    name: z.string().min(1),
+    review: z.string().min(1),
+    rating: z.string().min(1),
+    date: z.string().min(1),
+  })
+);
+
+export const useUpdateReview = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ? WHERE id = ?',
+      [data.name, data.review, Number(data.rating), data.date, data.id]
+    );
+    return { success: true };
+  },
+  zod$({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    review: z.string().min(1),
+    rating: z.string().min(1),
+    date: z.string().min(1),
+  })
+);
+
+export const useDeleteReview = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute('DELETE FROM reviews WHERE id = ?', [data.id]);
+    return { success: true };
+  },
+  zod$({ id: z.string().min(1) })
+);
+
 // Route protection - redirect to signin if not authenticated
 export const onRequest: RequestHandler = (event) => {
   const session = event.sharedMap.get('session');

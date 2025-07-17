@@ -137,7 +137,7 @@ export default component$(() => {
       </div>
 
       {/* Event Table Panel - Full Width */}
-      <div class="bg-gradient-to-br from-white to-clay-50/50 rounded-2xl p-4 border border-clay-200/50 shadow-xl max-w-full w-full mx-0">
+      <div class="bg-gradient-to-br from-white to-clay-50/50 rounded-2xl p-6 border border-clay-200/50 shadow-xl">
         <h3 class="text-lg font-semibold text-clay-900 mb-4">Current Workshops</h3>
         {workshops.value.length === 0 ? (
           <div class="p-8 text-center text-gray-500">
@@ -146,8 +146,8 @@ export default component$(() => {
         ) : (
           <>
             {/* Table for md+ screens */}
-            <div class="hidden md:block overflow-x-auto w-full">
-              <table class="min-w-full divide-y divide-gray-200 rounded-xl overflow-hidden w-full">
+            <div class="hidden md:block overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200 rounded-xl overflow-hidden">
                 <thead class="bg-gray-50">
                   <tr>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
