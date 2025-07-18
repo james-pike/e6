@@ -15,12 +15,28 @@
     --qwik-dirty-black: #1d2033;
     --qwik-dark-background: #151934;
     --qwik-dark-text: #ffffff;
+    --watercolor-green-1: #b2d8b2;
+    --watercolor-green-2: #d0e6c8;
+    --watercolor-green-3: #eaf6e7;
   }
 
-  /* Prevent horizontal overflow */
   html, body {
     overflow-x: hidden;
     max-width: 100%;
+    min-height: 100vh;
+    /* Watercolor-inspired green gradient background */
+    background: linear-gradient(135deg, var(--watercolor-green-1) 0%, var(--watercolor-green-2) 60%, var(--watercolor-green-3) 100%);
+    /* Optional: add a watercolor texture overlay if you have a PNG/SVG */
+    /* background-image: url('/public/watercolor-texture.png'), linear-gradient(135deg, var(--watercolor-green-1) 0%, var(--watercolor-green-2) 60%, var(--watercolor-green-3) 100%); */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  /* Remove default white backgrounds from Tailwind */
+  body, .bg-white, .bg-white\/80, .bg-white\/90 {
+    background-color: transparent !important;
+    background-image: none !important;
   }
 
   /* Ensure containers don't overflow */

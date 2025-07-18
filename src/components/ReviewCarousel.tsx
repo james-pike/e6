@@ -1,10 +1,12 @@
-import { component$, useSignal, $, useTask$ } from "@builder.io/qwik";
+import { component$, useSignal, $, useTask$, useVisibleTask$ } from "@builder.io/qwik";
 import { useReviewsLoader } from '~/routes/plugin@reviews';
 
 export default component$(() => {
   const currentIndex = useSignal(0);
   const isAutoPlaying = useSignal(true);
   const reviews = useReviewsLoader();
+  const carouselRef = useSignal<HTMLDivElement>();
+  const activeIndex = useSignal(0);
 
   // Number of reviews per slide (desktop)
   const REVIEWS_PER_SLIDE = 3;
@@ -48,6 +50,39 @@ export default component$(() => {
       }, 4000);
       cleanup(() => clearInterval(interval));
     }
+  });
+
+  // Scroll to card when bullet is clicked
+  const scrollToCard = $((idx: number) => {
+    const carousel = carouselRef.value;
+    if (!carousel) return;
+    const card = carousel.querySelectorAll<HTMLElement>(".review-card")[idx];
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  });
+
+  // Update activeIndex on scroll
+  useVisibleTask$(() => {
+    const carousel = carouselRef.value;
+    if (!carousel) return;
+    const onScroll = () => {
+      const cards = carousel.querySelectorAll<HTMLElement>(".review-card");
+      let minDiff = Infinity;
+      let idx = 0;
+      cards.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const diff = Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2);
+        if (diff < minDiff) {
+          minDiff = diff;
+          idx = i;
+        }
+      });
+      activeIndex.value = idx;
+    };
+    carousel.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => carousel.removeEventListener("scroll", onScroll);
   });
 
   // Helper to format date as relative time (e.g., '3 days ago')
@@ -95,7 +130,7 @@ export default component$(() => {
       <div class="absolute bottom-20 left-10 w-20 h-20 bg-sage-300/20 rounded-full blur-xl animate-float" style="animation-delay: -2s;"></div>
       <div class="absolute top-1/3 right-1/4 w-16 h-16 bg-earth-300/20 rounded-full blur-xl animate-float" style="animation-delay: -4s;"></div>
       
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="relative max-w-7xl mx-auto">
         {/* Section Header */}
         <div class="text-center mb-12">
           <h2 class="text-4xl md:text-5xl font-bold font-serif mb-6">
@@ -110,7 +145,7 @@ export default component$(() => {
         </div>
 
         {/* Carousel Container */}
-        <div class="relative max-w-6xl mx-auto">
+        <div class="relative w-full">
           {(safeReviews.length === 0) ? (
             <div class="text-center py-12 text-sage-600 text-lg">
               No reviews available yet.
@@ -118,10 +153,10 @@ export default component$(() => {
           ) : (
             <>
               {/* Unified Card Carousel: One card per review, scrollable on all breakpoints */}
-              <div class="overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                <div class="flex gap-6">
-                  {safeReviews.map((review) => (
-                    <div key={review.id} class="flex-shrink-0 w-80 snap-center">
+              <div class="overflow-x-auto snap-x snap-mandatory scrollbar-hide" ref={carouselRef}>
+                <div class="flex gap-6 px-4">
+                  {safeReviews.map((review, idx) => (
+                    <div key={review.id} class="review-card flex-shrink-0 w-80 md:w-96 lg:w-[28rem] snap-center">
                       <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-clay-200/50 flex flex-col h-full">
                         {/* Stars */}
                         <div class="flex justify-center mb-4">
@@ -150,6 +185,22 @@ export default component$(() => {
                     </div>
                   ))}
                 </div>
+              </div>
+              {/* Bullets/Dots Navigation */}
+              <div class="flex justify-center mt-6 gap-2">
+                {safeReviews.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    aria-label={`Go to review ${idx + 1}`}
+                    class={`w-3 h-3 rounded-full transition-all duration-300 border-2 ${
+                      idx === activeIndex.value
+                        ? 'bg-gradient-to-r from-clay-600 to-earth-600 border-clay-600 scale-125 shadow-lg'
+                        : 'bg-clay-300 border-clay-200 hover:bg-clay-400'
+                    }`}
+                    onClick$={() => scrollToCard(idx)}
+                  />
+                ))}
               </div>
             </>
           )}

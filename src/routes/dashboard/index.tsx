@@ -142,9 +142,14 @@ export const useReviewsLoader = routeLoader$(async (event) => {
 export const useAddReview = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
+    let reviewDate = data.date;
+    // If date is missing or is a short YYYY-MM-DD string, use current ISO timestamp
+    if (!reviewDate || /^\d{4}-\d{2}-\d{2}$/.test(reviewDate)) {
+      reviewDate = new Date().toISOString();
+    }
     await client.execute(
       'INSERT INTO reviews (name, review, rating, date) VALUES (?, ?, ?, ?)',
-      [data.name, data.review, Number(data.rating), data.date]
+      [data.name, data.review, Number(data.rating), reviewDate]
     );
     return { success: true };
   },
@@ -159,9 +164,14 @@ export const useAddReview = routeAction$(
 export const useUpdateReview = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
+    let reviewDate = data.date;
+    // If date is missing or is a short YYYY-MM-DD string, use current ISO timestamp
+    if (!reviewDate || /^\d{4}-\d{2}-\d{2}$/.test(reviewDate)) {
+      reviewDate = new Date().toISOString();
+    }
     await client.execute(
       'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ? WHERE id = ?',
-      [data.name, data.review, Number(data.rating), data.date, data.id]
+      [data.name, data.review, Number(data.rating), reviewDate, data.id]
     );
     return { success: true };
   },

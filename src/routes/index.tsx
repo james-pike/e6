@@ -180,7 +180,11 @@ export default component$(() => {
     <>
 <Hero/>
     <WorkshopsCarousel workshops={workshops.value} />
-    
+    <div class="flex justify-center my-8">
+      <a href="/workshops" class="px-8 py-3 bg-sage-600 text-white rounded-full text-lg font-semibold shadow-lg hover:bg-sage-700 transition-colors">
+        View All Workshops
+      </a>
+    </div>
       <ReviewCarousel />
 <FAQAccordion/>
         <ContactSection />
