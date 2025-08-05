@@ -19,7 +19,6 @@ turso db shell your-database-name < migrate_faqs.sql
 # Or connect to your database and run the SQL commands manually
 ```
 
-### 2. Verify the Migration
 
 After running the migration, verify that the category column was added:
 
