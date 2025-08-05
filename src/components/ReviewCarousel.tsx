@@ -137,7 +137,7 @@ export default component$(() => {
               {/* Unified Card Carousel: One card per review, scrollable on all breakpoints */}
               <div class="overflow-x-auto snap-x snap-mandatory scrollbar-hide" ref={carouselRef}>
                 <div class="flex gap-6 px-4">
-                  {safeReviews.map((review, idx) => (
+                  {safeReviews.map((review) => (
                     <div key={review.id} class="review-card flex-shrink-0 w-80 md:w-96 lg:w-[28rem] snap-center">
                       <div class="bg-gradient-to-br from-white via-sage-50/30 to-clay-50/30 backdrop-blur-sm rounded-2xl shadow-xl p-6 border-2 border-clay-200/50 flex flex-col h-full">
                         {/* Stars */}
