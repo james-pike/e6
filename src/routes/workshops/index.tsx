@@ -17,11 +17,7 @@ export const useClassesLoader = routeLoader$(async (event) => {
   }));
 });
 
-const sortOptions = [
-  { value: 'date', label: 'Date' },
-  { value: 'level', label: 'Level' },
-  { value: 'instructor', label: 'Instructor' },
-];
+
 
 export default component$(() => {
   const workshops = useClassesLoader();

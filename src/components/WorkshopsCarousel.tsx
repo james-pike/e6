@@ -1,5 +1,4 @@
 import { component$ } from "@builder.io/qwik";
-import { Image } from "@unpic/qwik";
 
 interface Workshop {
   id: number;
