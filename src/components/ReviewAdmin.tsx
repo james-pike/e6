@@ -8,6 +8,7 @@ interface Review {
   review: string;
   rating: number;
   date: string;
+  role: string; // ✅ Added role
 }
 
 export default component$(() => {
@@ -18,12 +19,10 @@ export default component$(() => {
   const editingId = useSignal<string | null>(null);
   const form = useSignal<Partial<Review>>({});
 
-  // Handle form input changes
   const handleInput = $((e: any) => {
     form.value = { ...form.value, [e.target.name]: e.target.value };
   });
 
-  // Edit review
   const handleEdit = $((review: Review) => {
     editingId.value = String(review.id);
     form.value = { ...review };
@@ -36,12 +35,39 @@ export default component$(() => {
         <h3 class="text-lg font-semibold text-clay-900 mb-4">
           {editingId.value ? 'Edit Review' : 'Add Review'}
         </h3>
-        <Form action={editingId.value ? updateAction : addAction} spaReset onSubmit$={() => { editingId.value = null; form.value = {}; }}>
+        <Form
+          action={editingId.value ? updateAction : addAction}
+          spaReset
+          onSubmit$={() => {
+            editingId.value = null;
+            form.value = {};
+          }}
+        >
           {editingId.value && <input type="hidden" name="id" value={editingId.value} />}
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <input name="name" value={form.value.name || ''} onInput$={handleInput} placeholder="Name" required class="border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300 w-full" />
-            <input name="date" type="date" value={form.value.date || ''} onInput$={handleInput} required class="border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300 w-full" />
-            <select name="rating" value={form.value.rating || ''} onInput$={handleInput} required class="border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300 w-full">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+            <input
+              name="name"
+              value={form.value.name || ''}
+              onInput$={handleInput}
+              placeholder="Name"
+              required
+              class="form-input"
+            />
+            <input
+              name="date"
+              type="date"
+              value={form.value.date || ''}
+              onInput$={handleInput}
+              required
+              class="form-input"
+            />
+            <select
+              name="rating"
+              value={form.value.rating || ''}
+              onInput$={handleInput}
+              required
+              class="form-input"
+            >
               <option value="">Rating</option>
               <option value="5">5</option>
               <option value="4">4</option>
@@ -49,14 +75,39 @@ export default component$(() => {
               <option value="2">2</option>
               <option value="1">1</option>
             </select>
-            <textarea name="review" value={form.value.review || ''} onInput$={handleInput} placeholder="Review text" required class="border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300 w-full min-h-[40px]" />
+            <input
+              name="role"
+              value={form.value.role || ''}
+              onInput$={handleInput}
+              placeholder="Title/Role"
+              required
+              class="form-input"
+            />
+            <textarea
+              name="review"
+              value={form.value.review || ''}
+              onInput$={handleInput}
+              placeholder="Review text"
+              required
+              class="form-textarea min-h-[40px]"
+            />
           </div>
           <div class="flex gap-2 flex-wrap">
-            <button type="submit" class="px-6 py-2 bg-sage-600 text-white rounded-full text-sm font-medium hover:bg-sage-700 transition-colors">
+            <button
+              type="submit"
+              class="px-6 py-2 bg-sage-600 text-white rounded-full text-sm font-medium hover:bg-sage-700 transition-colors"
+            >
               {editingId.value ? 'Update' : 'Add'}
             </button>
             {editingId.value && (
-              <button type="button" class="px-6 py-2 bg-white text-sage-700 border border-sage-300 rounded-full text-sm font-medium hover:bg-sage-50 transition-colors" onClick$={() => { editingId.value = null; form.value = {}; }}>
+              <button
+                type="button"
+                class="px-6 py-2 bg-white text-sage-700 border border-sage-300 rounded-full text-sm font-medium hover:bg-sage-50 transition-colors"
+                onClick$={() => {
+                  editingId.value = null;
+                  form.value = {};
+                }}
+              >
                 Cancel
               </button>
             )}
@@ -77,6 +128,7 @@ export default component$(() => {
               <thead class="bg-gray-50">
                 <tr>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                   <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Review</th>
@@ -87,6 +139,7 @@ export default component$(() => {
                 {reviews.value.map((review) => (
                   <tr key={review.id}>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{review.name}</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{review.role}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{review.date}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{review.rating}</td>
                     <td class="px-4 py-3 max-w-xs truncate text-sm text-gray-900" title={review.review}>{review.review}</td>
@@ -113,4 +166,4 @@ export default component$(() => {
       </div>
     </div>
   );
-}); 
+});
