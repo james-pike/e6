@@ -1,4 +1,24 @@
 {
+  "version": 2,
+  "framework": "qwik",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "engines": {
+          "node": "18"
+        }
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "outputDirectory": "dist",
   "headers": [
     {
       "source": "/build/(.*)",
