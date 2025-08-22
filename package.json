@@ -48,6 +48,7 @@
     "@libsql/client": "latest",
     "@unpic/qwik": "^1.0.0",
     "mammoth": "^1.10.0",
+    "next-auth": "^5.0.0-beta.29",
     "turndown": "^7.2.1"
   }
 }
