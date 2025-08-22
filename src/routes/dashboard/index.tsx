@@ -276,13 +276,8 @@ export const useAddReview = routeAction$(
       reviewDate = new Date().toISOString();
     }
     await client.execute(
-<<<<<<< HEAD
       'INSERT INTO reviews (name, review, rating, date) VALUES (?, ?, ?, ?)',
       [data.name, data.review, Number(data.rating), reviewDate]
-=======
-      'INSERT INTO reviews (name, review, rating, date, role) VALUES (?, ?, ?, ?, ?)',
-      [data.name, data.review, Number(data.rating), data.date, data.role] // ✅ Include role
->>>>>>> temp-branch
     );
     return { success: true };
   },
@@ -304,13 +299,8 @@ export const useUpdateReview = routeAction$(
       reviewDate = new Date().toISOString();
     }
     await client.execute(
-<<<<<<< HEAD
       'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ? WHERE id = ?',
       [data.name, data.review, Number(data.rating), reviewDate, data.id]
-=======
-      'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ?, role = ? WHERE id = ?',
-      [data.name, data.review, Number(data.rating), data.date, data.role, data.id] // ✅ Include role
->>>>>>> temp-branch
     );
     return { success: true };
   },
