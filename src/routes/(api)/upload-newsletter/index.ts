@@ -1,5 +1,5 @@
 import { routeAction$ } from '@builder.io/qwik-city';
-import * as mammoth from 'mammoth'; // ✅ Fix here
+import * as mammoth from 'mammoth'; // ✅ Fix heres
 import TurndownService from 'turndown';
 
 export const useUploadNewsletterAction = routeAction$(async (_, { request }) => {
