@@ -5,8 +5,58 @@ import EventAdmin from '~/components/eventAdmin';
 import FaqAdmin from '~/components/FaqAdmin';
 import ReviewAdmin from '~/components/ReviewAdmin';
 import { tursoClient } from '~/utils/turso';
+import GalleryAdmin from "~/components/GalleryAdmin";
+import NewsletterAdmin from "~/components/NewsletterAdmin";
 
 // CRUD Loaders/Actions for dashboard
+// Class Loader - without spots and level
+// Load newsletter from DB
+export const usenewsletterLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM newsletter ORDER BY date DESC');
+  return result.rows.map(row => ({
+    id: (row as any).id as number,
+    title: (row as any).title as string,
+    slug: (row as any).slug as string,
+    date: (row as any).date as string,
+    content: (row as any).content as string,
+    image: (row as any).image as string | null,
+  }));
+});
+
+// Add a newsletter
+export const useAddNewsletter = routeAction$(async (formData: any, event) => {
+  const client = tursoClient(event);
+  // Type cast formData fields explicitly
+  const title = String(formData.title);
+  const slug = String(formData.slug);
+  const date = String(formData.date);
+  const content = String(formData.content);
+  const image = formData.image ? String(formData.image) : null;
+
+  await client.execute(
+    'INSERT INTO newsletter (title, slug, date, content, image) VALUES (?, ?, ?, ?, ?)',
+    [title, slug, date, content, image]
+  );
+
+  return { success: true };
+});
+
+// Delete newsletter
+export const useDeleteNewsletter = routeAction$(async (formData: any, event) => {
+  const client = tursoClient(event);
+  const id = Number(formData.id);
+
+  if (isNaN(id)) {
+    return { success: false, error: 'Invalid id' };
+  }
+
+  await client.execute('DELETE FROM newsletter WHERE id = ?', [id]);
+
+  return { success: true };
+});
+
+
 export const useClassesLoader = routeLoader$(async (event) => {
   const client = tursoClient(event);
   const result = await client.execute('SELECT * FROM classes ORDER BY date ASC');
@@ -15,19 +65,42 @@ export const useClassesLoader = routeLoader$(async (event) => {
     name: (row as any).name,
     instructor: (row as any).instructor,
     date: (row as any).date,
-    spots: (row as any).spots,
-    level: (row as any).level,
     image: (row as any).image,
     description: (row as any).description,
-  })) as Array<{ id: number; name: string; instructor: string; date: string; spots: number; level: string; image?: string; description?: string }>;
+    duration: (row as any).duration,
+    price: (row as any).price,
+    url: (row as any).url,
+  })) as Array<{
+    id: number;
+    name: string;
+    instructor: string;
+    date: string;
+    image?: string;
+    description?: string;
+    duration?: string;
+    price?: string;
+    url?: string;
+  }>;
 });
 
+
+
+// Add Class action
 export const useAddClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO classes (name, instructor, date, spots, level, image, description) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.description || null]
+      'INSERT INTO classes (name, instructor, date, image, description, duration, price, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [
+        data.name,
+        data.instructor,
+        data.date,
+        data.image || null,
+        data.description || null,
+        data.duration || null,
+        data.price || null,
+        data.url || null,
+      ]
     );
     return { success: true };
   },
@@ -35,19 +108,31 @@ export const useAddClass = routeAction$(
     name: z.string().min(1),
     instructor: z.string().min(1),
     date: z.string().min(1),
-    spots: z.string().min(1),
-    level: z.string().min(1),
     image: z.string().optional(),
     description: z.string().optional(),
+    duration: z.string().optional(),
+    price: z.string().optional(),
+    url: z.string().url().optional(),
   })
 );
 
+// Update Class action
 export const useUpdateClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE classes SET name = ?, instructor = ?, date = ?, spots = ?, level = ?, image = ?, description = ? WHERE id = ?',
-      [data.name, data.instructor, data.date, Number(data.spots), data.level, data.image || null, data.description || null, data.id]
+      'UPDATE classes SET name = ?, instructor = ?, date = ?, image = ?, description = ?, duration = ?, price = ?, url = ? WHERE id = ?',
+      [
+        data.name,
+        data.instructor,
+        data.date,
+        data.image || null,
+        data.description || null,
+        data.duration || null,
+        data.price || null,
+        data.url || null,
+        data.id,
+      ]
     );
     return { success: true };
   },
@@ -56,13 +141,15 @@ export const useUpdateClass = routeAction$(
     name: z.string().min(1),
     instructor: z.string().min(1),
     date: z.string().min(1),
-    spots: z.string().min(1),
-    level: z.string().min(1),
     image: z.string().optional(),
     description: z.string().optional(),
+    duration: z.string().optional(),
+    price: z.string().optional(),
+    url: z.string().url().optional(),
   })
 );
 
+// Delete Class action (unchanged)
 export const useDeleteClass = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
@@ -72,31 +159,69 @@ export const useDeleteClass = routeAction$(
   zod$({ id: z.string().min(1) })
 );
 
-// FAQ CRUD Loaders/Actions
+// Gallery CRUD Loaders/Actions
+export const useGalleryLoader = routeLoader$(async (event) => {
+  const client = tursoClient(event);
+  const result = await client.execute('SELECT * FROM gallery ORDER BY id ASC');
+  return result.rows.map(row => ({
+    id: (row as any).id,
+    image: (row as any).image,
+  })) as Array<{ id: number; image: string }>;
+});
+
+export const useAddGalleryImage = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute(
+      'INSERT INTO gallery (image) VALUES (?)',
+      [data.image]
+    );
+    return { success: true };
+  },
+  zod$({
+    image: z.string().min(1),
+  })
+);
+
+export const useDeleteGalleryImage = routeAction$(
+  async (data, event) => {
+    const client = tursoClient(event);
+    await client.execute('DELETE FROM gallery WHERE id = ?', [data.id]);
+    return { success: true };
+  },
+  zod$({
+    id: z.string().min(1),
+  })
+);
+
+
+
+
+
+
+// FAQ Loaders/Actions
 export const useFaqsLoader = routeLoader$(async (event) => {
   const client = tursoClient(event);
-  const result = await client.execute('SELECT * FROM faqs ORDER BY id ASC');
+  const result = await client.execute('SELECT id, question, answer FROM faqs ORDER BY id ASC');
   return result.rows.map(row => ({
     id: (row as any).id,
     question: (row as any).question,
     answer: (row as any).answer,
-    category: (row as any).category || 'General', // Default to 'General' if no category
-  })) as Array<{ id: number; question: string; answer: string; category: string }>;
+  })) as Array<{ id: number; question: string; answer: string }>;
 });
 
 export const useAddFaq = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO faqs (question, answer, category) VALUES (?, ?, ?)',
-      [data.question, data.answer, data.category || 'General']
+      'INSERT INTO faqs (question, answer) VALUES (?, ?)',
+      [data.question, data.answer]
     );
     return { success: true };
   },
   zod$({
     question: z.string().min(1),
     answer: z.string().min(1),
-    category: z.string().optional(),
   })
 );
 
@@ -104,8 +229,8 @@ export const useUpdateFaq = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE faqs SET question = ?, answer = ?, category = ? WHERE id = ?',
-      [data.question, data.answer, data.category || 'General', data.id]
+      'UPDATE faqs SET question = ?, answer = ? WHERE id = ?',
+      [data.question, data.answer, data.id]
     );
     return { success: true };
   },
@@ -113,7 +238,6 @@ export const useUpdateFaq = routeAction$(
     id: z.string().min(1),
     question: z.string().min(1),
     answer: z.string().min(1),
-    category: z.string().optional(),
   })
 );
 
@@ -123,8 +247,11 @@ export const useDeleteFaq = routeAction$(
     await client.execute('DELETE FROM faqs WHERE id = ?', [data.id]);
     return { success: true };
   },
-  zod$({ id: z.string().min(1) })
+  zod$({
+    id: z.string().min(1),
+  })
 );
+
 
 // Reviews CRUD Loaders/Actions
 export const useReviewsLoader = routeLoader$(async (event) => {
@@ -136,15 +263,16 @@ export const useReviewsLoader = routeLoader$(async (event) => {
     review: (row as any).review,
     rating: (row as any).rating,
     date: (row as any).date,
-  })) as Array<{ id: number; name: string; review: string; rating: number; date: string }>;
+    role: (row as any).role, // ✅ Include role
+  })) as Array<{ id: number; name: string; review: string; rating: number; date: string; role: string }>;
 });
 
 export const useAddReview = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'INSERT INTO reviews (name, review, rating, date) VALUES (?, ?, ?, ?)',
-      [data.name, data.review, Number(data.rating), data.date]
+      'INSERT INTO reviews (name, review, rating, date, role) VALUES (?, ?, ?, ?, ?)',
+      [data.name, data.review, Number(data.rating), data.date, data.role] // ✅ Include role
     );
     return { success: true };
   },
@@ -153,6 +281,7 @@ export const useAddReview = routeAction$(
     review: z.string().min(1),
     rating: z.string().min(1),
     date: z.string().min(1),
+    role: z.string().min(1), // ✅ Validate role
   })
 );
 
@@ -160,8 +289,8 @@ export const useUpdateReview = routeAction$(
   async (data, event) => {
     const client = tursoClient(event);
     await client.execute(
-      'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ? WHERE id = ?',
-      [data.name, data.review, Number(data.rating), data.date, data.id]
+      'UPDATE reviews SET name = ?, review = ?, rating = ?, date = ?, role = ? WHERE id = ?',
+      [data.name, data.review, Number(data.rating), data.date, data.role, data.id] // ✅ Include role
     );
     return { success: true };
   },
@@ -171,6 +300,7 @@ export const useUpdateReview = routeAction$(
     review: z.string().min(1),
     rating: z.string().min(1),
     date: z.string().min(1),
+    role: z.string().min(1), // ✅ Validate role
   })
 );
 
@@ -271,6 +401,14 @@ export default component$(() => {
           <div class="mb-12">
             <ReviewAdmin />
           </div>
+
+          <div class="mb-12">
+            <GalleryAdmin />
+          </div>
+
+          <NewsletterAdmin/>
+
+
 
           {/* Dashboard Content */}
           {/* Session Info */}
