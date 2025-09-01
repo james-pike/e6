@@ -61,12 +61,14 @@ export default component$(() => {
           </div>
 
           {/* Credentials Sign In Form */}
-          <Form
-            action={signIn}
-            spaReset
-            class="space-y-4"
-            onSubmit$={() => (isLoading.value = true)}
-          >
+       <Form
+  action={signIn}
+  spaReset
+  class="space-y-4"
+onSubmit$={() => {
+  isLoading.value = true;
+}}
+>
             <input type="hidden" name="providerId" value="credentials" />
             <input name="username" placeholder="Admin Username" required class="w-full border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300" />
             <input name="password" type="password" placeholder="Admin Password" required class="w-full border border-clay-300 rounded-lg px-4 py-2 text-clay-900 bg-white focus:ring-2 focus:ring-sage-300" />
